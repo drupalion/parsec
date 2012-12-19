@@ -1,0 +1,10 @@
+name = Datex Date
+description = Makes date fields created by date module to be displayed in Jalali format
+package = Date/Time
+core = 7.x
+php = 5.2
+
+files[] = datex_date.module
+
+dependencies[] = date_api
+dependencies[] = datex_api

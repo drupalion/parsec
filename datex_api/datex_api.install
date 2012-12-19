@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * Implements hook_requirements().
+ * datex works much better with php-intl installed
+ */
+function datex_api_requirements($phase) {
+    $requirements = array();
+    // Ensure translations don't break at install time
+    $t = get_t();
+
+
+    $requirements['datex_intl'] = array(
+        'title' => $t('php-intl avalibality'),
+        'value' => $t(
+                '%datex_api works much better and more smoothly, if php-intl is available.', array(
+            'datex_api' => 'Datex API',
+            'datex_patched' => 'Datex Patched',
+                )
+        ),
+        'description' => $t('php-intl is new PHP Internationalazation class, Supporting all the calendars available, using php-intl, datex internal methods will not be needed any more since php-intl is faster and better.'),
+        'severity' => REQUIREMENT_INFO,
+    );
+
+    if (!class_exists('IntlDateFormatter')) {
+        $requirements['datex_conflict']['severity'] = REQUIREMENT_OK;
+    }
+
+    return $requirements;
+}

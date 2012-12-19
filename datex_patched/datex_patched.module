@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @todo: what happens if one of granularities are not given?
+ */
+
+/**
+ * Implements hook_help().
+ */
+function datex_patched_help($path, $arg) {
+    if ($path == 'admin/help#datex_patched') {
+        $output = '<p>';
+        $output .= t('By enabling Datex, Gregorian dates generates by');
+        $output .= t(' <em>date module</em> ');
+        $output .= t('will be displayed in Jalali format.');
+        $output .= '</p><p>';
+        $output .= t('Note that Datex will not change display of dates when UI language is not Persian.');
+        $output .= '</p><p>';
+        $output .= t('For this module to work properly, you must have applied the patch from modules folder.');
+        $output .= '</p>';
+        return $output;
+    }
+}
+
+function datex_patched_datex_format_alter(&$data,&$context) {
+    if ($context[4] == 'fa') {
+        $data = DatexObject::date_format(intval($context[0]), $context[2]);
+    }
+}
