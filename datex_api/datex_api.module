@@ -5,302 +5,304 @@ module_load_include('inc', 'datex_api', 'datex_api_classes');
 /**
  * @file Helper functions for converting date formats. Required by datex.
  */
+
 /**
  * Implements hook_menu().
  */
 function datex_api_menu() {
-    $items = array();
-    $items['admin/config/regional/date-time/datex_api'] = array(
-        'title' => 'Datex API',
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('datex_api_menu_callback'),
-        'access arguments' => array('access administration pages'),
-        'file' => 'datex_api.inc',
-        'type' => MENU_LOCAL_TASK,
-    );
-    return $items;
+  $items = array();
+  $items['admin/config/regional/date-time/datex_api'] = array(
+    'title' => 'Datex API',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('datex_api_menu_callback'),
+    'access arguments' => array('access administration pages'),
+    'file' => 'datex_api.inc',
+    'file' => 'datex_api.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
 }
 
-
 function datex_api_parser_jalali_str_to_gregorian($date_orig, $format, $reset = FALSE) {
-    $persian_date_names = &drupal_static(__FUNCTION__);
-    if (!isset($persian_date_names) || $reset) {
-        $persian_date_names = datex_api_persian_names();
-    }
+  $persian_date_names = &drupal_static(__FUNCTION__);
+  if (!isset($persian_date_names) || $reset) {
+    $persian_date_names = datex_api_persian_names();
+  }
 
-    if (array_key_exists($format, system_get_date_types())) {
-        $format = variable_get('date_format_' . $format);
-    }
+  if (array_key_exists($format, system_get_date_types())) {
+    $format = variable_get('date_format_' . $format);
+  }
 
-    list($day, $month, $year, $hour, $minute, $second, $ampm) = array(
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-    );
+  list($day, $month, $year, $hour, $minute, $second, $ampm) = array(
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+  );
 
-    $date_orig_array = str_split($date_orig);
-    for ($i = 0; $i < strlen($format); $i++) {
-        switch ($format[$i]) {
-            case 'd':
-                //day: xx
-                $day = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                break;
+  $date_orig_array = str_split($date_orig);
+  for ($i = 0; $i < strlen($format); $i++) {
+    switch ($format[$i]) {
+      case 'd':
+        //day: xx
+        $day = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        break;
 
-            case 'D':
-                drupal_set_message(t('date format string D is not implemented yet in text mode.'), 'error');
-                break;
+      case 'D':
+        drupal_set_message(t('date format string D is not implemented yet in text mode.'), 'error');
+        break;
 
-            case 'j':
-                //day: xx
-                if (preg_match('/^\d{2}[^\d]/', $date_orig, $match)) {
-                    $day = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                }
-                //day: x
-                else {
-                    $day = intval(array_shift($date_orig_array));
-                }
-                break;
-
-            case 'l':
-                /**
-                 * @todo implement 'l'
-                 */
-                datex_api_str_parser_error('l');
-                break;
-
-            case 'N':
-                /**
-                 * @todo implement 'N'
-                 */
-                datex_api_str_parser_error('N');
-                break;
-
-            case 'S':
-                /**
-                 * @todo implement 'S'
-                 */
-                datex_api_str_parser_error('S');
-                break;
-
-            case 'w':
-                /**
-                 * @todo implement 'w'
-                 */
-                datex_api_str_parser_error('w');
-                break;
-
-            case 'z':
-                /**
-                 * @todo implement 'z'
-                 */
-                datex_api_str_parser_error('z');
-                break;
-
-            case 'W':
-                /**
-                 * @todo implement 'W'
-                 */
-                datex_api_str_parser_error('W');
-                break;
-
-            case 'm':
-                //month: xx
-                $day = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                break;
-
-            case 'M': // No month abbreviation in persian! use full name.
-            case 'F':
-                /**
-                 * @todo implement 'F'
-                 */
-                datex_api_str_parser_error('F or M');
-                break;
-
-            case 'n':
-                //month: xx
-                if (preg_match('/^\d{2}[^\d]/', $date_orig, $match)) {
-                    $month = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                }
-                //month: x
-                else {
-                    $month = intval(array_shift($date_orig_array));
-                }
-                break;
-
-            case 't':
-                /**
-                 * @todo implement 't'
-                 */
-                datex_api_str_parser_error('t');
-                break;
-
-            case 'L':
-                /**
-                 * @todo implement 'L'
-                 */
-                datex_api_str_parser_error('L');
-                break;
-
-            case 'y':
-                /**
-                 * @todo implement 'y'
-                 */
-                datex_api_str_parser_error('y');
-                break;
-
-            case 'o': // same as Y in persian
-            case 'Y':
-                $year = '';
-                for ($j = 0; $j < 4; $j++) {
-                    $year .= array_shift($date_orig_array);
-                }
-                $year = intval($year);
-                break;
-
-            case 'a':
-            case 'A':
-                /**
-                 * @todo implement 'a'
-                 * @todo implement 'A'
-                 */
-                datex_api_str_parser_error('A or a');
-                break;
-
-            case 'B':
-                /**
-                 * @todo implement 'B'
-                 */
-                datex_api_str_parser_error('B');
-                break;
-
-            case 'g':
-                /**
-                 * @todo implement 'g'
-                 */
-                datex_api_str_parser_error('g');
-                break;
-
-            case 'G':
-                if (preg_match('/^\d{2}[^\d]/', $date_orig, $match)) {
-                    $hour = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                }
-                //month: x
-                else {
-                    $hour = intval(array_shift($date_orig_array));
-                }
-                break;
-
-            case 'h':
-                /**
-                 * @todo implement 'h'
-                 */
-                datex_api_str_parser_error('h');
-                break;
-
-            case 'H':
-                $hour = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                break;
-
-            case 'i':
-                $minute = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                break;
-
-            case 's':
-                $second = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
-                break;
-
-            case 'u';
-                /**
-                 * @todo implement 'u'
-                 */
-                datex_api_str_parser_error('u');
-                break;
-
-            case 'e':
-                $tz = $date_orig->format('e');
-                if ($tz == 'Asia/Tehran') {
-                    $final .= $persian_date_names['tz'];
-                    $final_time .= $persian_date_names['tz'];
-                } else {
-                    $final .= $tz;
-                    $final_time .= $tz;
-                }
-                break;
-
-            case 'I':
-                /**
-                 * @todo implement 'I'
-                 */
-                datex_api_str_parser_error('I');
-                break;
-
-            case 'O':
-                /**
-                 * @todo implement 'O'
-                 */
-                datex_api_str_parser_error('O');
-                break;
-
-            case 'P':
-                /**
-                 * @todo implement 'P'
-                 */
-                datex_api_str_parser_error('P');
-                break;
-
-            case 'T':
-                /**
-                 * @todo implement 'T'
-                 */
-                datex_api_str_parser_error('T');
-                break;
-
-            case 'Z':
-                /**
-                 * @todo implement 'Z'
-                 */
-                datex_api_str_parser_error('Z');
-                break;
-
-            case 'c':
-                /**
-                 * @todo implement 'c'
-                 */
-                datex_api_str_parser_error('c');
-                break;
-
-            case 'r':
-                /**
-                 * @todo implement 'r'
-                 */
-                datex_api_str_parser_error('r');
-                break;
-
-            case 'U':
-                /**
-                 * @todo implement 'U'
-                 */
-                datex_api_str_parser_error('U');
-                break;
-
-            //it's not a formatting character, probably something like : or /
-            default :
-                break;
+      case 'j':
+        //day: xx
+        if (preg_match('/^\d{2}[^\d]/', $date_orig, $match)) {
+          $day = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
         }
+        //day: x
+        else {
+          $day = intval(array_shift($date_orig_array));
+        }
+        break;
+
+      case 'l':
+        /**
+         * @todo implement 'l'
+         */
+        datex_api_str_parser_error('l');
+        break;
+
+      case 'N':
+        /**
+         * @todo implement 'N'
+         */
+        datex_api_str_parser_error('N');
+        break;
+
+      case 'S':
+        /**
+         * @todo implement 'S'
+         */
+        datex_api_str_parser_error('S');
+        break;
+
+      case 'w':
+        /**
+         * @todo implement 'w'
+         */
+        datex_api_str_parser_error('w');
+        break;
+
+      case 'z':
+        /**
+         * @todo implement 'z'
+         */
+        datex_api_str_parser_error('z');
+        break;
+
+      case 'W':
+        /**
+         * @todo implement 'W'
+         */
+        datex_api_str_parser_error('W');
+        break;
+
+      case 'm':
+        //month: xx
+        $day = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        break;
+
+      case 'M': // No month abbreviation in persian! use full name.
+      case 'F':
+        /**
+         * @todo implement 'F'
+         */
+        datex_api_str_parser_error('F or M');
+        break;
+
+      case 'n':
+        //month: xx
+        if (preg_match('/^\d{2}[^\d]/', $date_orig, $match)) {
+          $month = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        }
+        //month: x
+        else {
+          $month = intval(array_shift($date_orig_array));
+        }
+        break;
+
+      case 't':
+        /**
+         * @todo implement 't'
+         */
+        datex_api_str_parser_error('t');
+        break;
+
+      case 'L':
+        /**
+         * @todo implement 'L'
+         */
+        datex_api_str_parser_error('L');
+        break;
+
+      case 'y':
+        /**
+         * @todo implement 'y'
+         */
+        datex_api_str_parser_error('y');
+        break;
+
+      case 'o': // same as Y in persian
+      case 'Y':
+        $year = '';
+        for ($j = 0; $j < 4; $j++) {
+          $year .= array_shift($date_orig_array);
+        }
+        $year = intval($year);
+        break;
+
+      case 'a':
+      case 'A':
+        /**
+         * @todo implement 'a'
+         * @todo implement 'A'
+         */
+        datex_api_str_parser_error('A or a');
+        break;
+
+      case 'B':
+        /**
+         * @todo implement 'B'
+         */
+        datex_api_str_parser_error('B');
+        break;
+
+      case 'g':
+        /**
+         * @todo implement 'g'
+         */
+        datex_api_str_parser_error('g');
+        break;
+
+      case 'G':
+        if (preg_match('/^\d{2}[^\d]/', $date_orig, $match)) {
+          $hour = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        }
+        //month: x
+        else {
+          $hour = intval(array_shift($date_orig_array));
+        }
+        break;
+
+      case 'h':
+        /**
+         * @todo implement 'h'
+         */
+        datex_api_str_parser_error('h');
+        break;
+
+      case 'H':
+        $hour = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        break;
+
+      case 'i':
+        $minute = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        break;
+
+      case 's':
+        $second = intval(array_shift($date_orig_array) . array_shift($date_orig_array));
+        break;
+
+      case 'u';
+        /**
+         * @todo implement 'u'
+         */
+        datex_api_str_parser_error('u');
+        break;
+
+      case 'e':
+        $tz = $date_orig->format('e');
+        if ($tz == 'Asia/Tehran') {
+          $final .= $persian_date_names['tz'];
+          $final_time .= $persian_date_names['tz'];
+        }
+        else {
+          $final .= $tz;
+          $final_time .= $tz;
+        }
+        break;
+
+      case 'I':
+        /**
+         * @todo implement 'I'
+         */
+        datex_api_str_parser_error('I');
+        break;
+
+      case 'O':
+        /**
+         * @todo implement 'O'
+         */
+        datex_api_str_parser_error('O');
+        break;
+
+      case 'P':
+        /**
+         * @todo implement 'P'
+         */
+        datex_api_str_parser_error('P');
+        break;
+
+      case 'T':
+        /**
+         * @todo implement 'T'
+         */
+        datex_api_str_parser_error('T');
+        break;
+
+      case 'Z':
+        /**
+         * @todo implement 'Z'
+         */
+        datex_api_str_parser_error('Z');
+        break;
+
+      case 'c':
+        /**
+         * @todo implement 'c'
+         */
+        datex_api_str_parser_error('c');
+        break;
+
+      case 'r':
+        /**
+         * @todo implement 'r'
+         */
+        datex_api_str_parser_error('r');
+        break;
+
+      case 'U':
+        /**
+         * @todo implement 'U'
+         */
+        datex_api_str_parser_error('U');
+        break;
+
+      //it's not a formatting character, probably something like : or /
+      default :
+        break;
     }
-    return array($day, $month, $year, $hour, $minute, $second, $ampm);
+  }
+  return array($day, $month, $year, $hour, $minute, $second, $ampm);
 }
 
 function datex_format($date_orig, $format, $reset = FALSE) {
-    static $formatter;
-    if(!$formatter) {
-        new DatexFormatter();
-    }
-    
-    return datex_api_parser_to_jalali($date_orig, $format, $reset);
+  static $formatter;
+  if (!$formatter) {
+    new DatexFormatter();
+  }
+
+  return datex_api_parser_to_jalali($date_orig, $format, $reset);
 }
 
