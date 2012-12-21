@@ -148,7 +148,7 @@ class DatexFormatter {
    * @return array
    */
   public static function to_gregorian($jalaliYear = NULL, $jalaliMonth = NULL, $jalaliDay = NULL) {
-    $now = datex_api_date_to_jalali();
+    $now = self::to_jalali();
     if (!$jalaliDay) {
       $jalaliDay = $now['day'];
     }
@@ -533,16 +533,16 @@ class DatexFormatter {
       return self::get_date_object($date);
     }
     elseif (is_object($date) && get_class($date) == 'DatexObject') {
-      return get_date_object($date);
+      return self::get_date_object($date);
     }
     elseif (is_object($date) && get_class($date) == 'DateTime' || get_class($date) == 'DateObject') {
-      return get_date_object($date->format('U'));
+      return self::get_date_object($date->format('U'));
     }
     elseif (is_array($date)) {
       $jalali_date = self::to_gregorian(@$date['year'], @$date['month'], @$date['day']);
       list($date['year'], $date['month'], $date['day']) = array($jalali_date['year'], $jalali_date['month'], $jalali_date['day']);
 
-      return get_date_object($date);
+      return self::get_date_object($date);
     }
   }
 
@@ -601,7 +601,7 @@ class DatexFormatter {
    * @return int timestamp
    */
   public static function get_date_timestamp($date) {
-    $date = get_date_object($date);
+    $date = self::get_date_object($date);
     return $date->format('U');
   }
 
