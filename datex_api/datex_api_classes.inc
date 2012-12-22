@@ -24,7 +24,7 @@ class DatexFormatter {
     else {
       return self::formatPHP($date, $format);
     }
-  }
+  } 
 
   /**
    * Returns array containing names of days and monthes in persian.
