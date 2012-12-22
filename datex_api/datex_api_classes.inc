@@ -17,7 +17,7 @@ class DatexFormatter {
    * @param array &$errors array to put errors in.
    * @return string formatted date.
    */
-  public static function format($date, $format, $use_intl = DATEX_USE_INTL, &$error_code, &$error_message) {
+  public static function format($date, $format, $use_intl = DATEX_USE_INTL, &$error_code = NULL, &$error_message = NULL) {
     if (self::hasINTL() && $use_intl) {
       return self::formatINTL($date, $format, $error_code, $error_message);
     }
@@ -330,7 +330,7 @@ class DatexFormatter {
       'a' => $persian_date_names['ampm'][$date->format('a')],
       'A' => $persian_date_names['ampm'][$date->format('a')],
       'B' => $persian_date_names['ampm'][$date->format('a')],
-      'c' => $final .= $jalali_date['year'] . '-' . $jalali_date['month'] . '-' . $jalali_date['day'] . 'T' . $date->format('H:i:sP'),
+      'c' => $jalali_date['year'] . '-' . $jalali_date['month'] . '-' . $jalali_date['day'] . 'T' . $date->format('H:i:sP'),
       'g' => $date->format('g'),
       'G' => $date->format('G'),
       'h' => $date->format('h'),
@@ -365,7 +365,7 @@ class DatexFormatter {
    * @param string $format
    * @return string
    */
-  public static function formatINTL($date, $format, &$error_code = NULL, &$error_message) {
+  public static function formatINTL($date, $format, &$error_code = NULL, &$error_message = NULL) {
     echo "in INTL";
     static $intl_formatter = NULL;
     if ($intl_formatter == NULL) {
@@ -380,10 +380,10 @@ class DatexFormatter {
     $intl_formatter->setPattern(self::phpToIntl($format));
     $date = $intl_formatter->format(self::getTimestamp($date));
 
-    if($error_code) {
+    if ($error_code) {
       $error_code = $intl_formatter->getErrorCode();
     }
-    if($error_message) {
+    if ($error_message) {
       $error_message = $intl_formatter->getErrorMessage();
     }
 
@@ -602,7 +602,7 @@ class DatexObject {
    */
   public function format($format = NULL, $use_intl = DATEX_USE_INTL) {
     $format = $format ? $format : $this->format_string;
-    return DatexFormatter::format($this->dateobj, $format, $use_intl,$this->error,$this->error_message);
+    return DatexFormatter::format($this->dateobj, $format, $use_intl, $this->error, $this->error_message);
   }
 
   /**
@@ -933,7 +933,7 @@ class DatexObjectUtils {
    *
    * @param mixed $date @see DatexFormatter::getDateObject
    */
-  public static function monthFirstDay ($date = NULL) {
+  public static function monthFirstDay($date = NULL) {
     $date = new DatexObject($date, FALSE);
     $date->setDate(NULL, NULL, 1);
     return $date;
@@ -944,9 +944,10 @@ class DatexObjectUtils {
    *
    * @param mixed $date @see DatexFormatter::getDateObject
    */
-  public static function monthLastDay ($date = NULL) {
+  public static function monthLastDay($date = NULL) {
     $date = new DatexObject($date, FALSE);
     $date->setDate(NULL, NULL, DatexFormatter::format($date, 't'));
     return $date;
   }
+
 }
