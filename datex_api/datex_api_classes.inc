@@ -323,7 +323,6 @@ class DatexFormatter {
       'F' => $persian_date_names['months'][$jalali_date['month']],
       'm' => sprintf('%02d', $jalali_date['month']),
       'n' => $jalali_date['month'],
-      //$final = str_replace('t', $jalali_date['month'], $format);
       'L' => str_replace('L', $L, $format),
       'Y' => $jalali_date['year'],
       'y' => $jalali_date['year'],
@@ -351,6 +350,7 @@ class DatexFormatter {
       'z' => $z,
       'W' => $W,
       'r' => $r,
+      't' => $t,
     );
 
     return strtr($format, $replacements);
@@ -935,7 +935,7 @@ class DatexObjectUtils {
    */
   public static function monthFirstDay ($date = NULL) {
     $date = new DatexObject($date, FALSE);
-    $date->setDate($date->format('Y'), $date->format('m'), 1);
+    $date->setDate(NULL, NULL, 1);
     return $date;
   }
 
@@ -946,7 +946,7 @@ class DatexObjectUtils {
    */
   public static function monthLastDay ($date = NULL) {
     $date = new DatexObject($date, FALSE);
-    $date->setDate($date->format('Y'), $date->format('m'), DatexFormatter::format($date, 't'));
+    $date->setDate(NULL, NULL, DatexFormatter::format($date, 't'));
     return $date;
   }
 }
