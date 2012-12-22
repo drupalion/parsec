@@ -24,7 +24,7 @@ class DatexFormatter {
     else {
       return self::formatPHP($date, $format);
     }
-  } 
+  }
 
   /**
    * Returns array containing names of days and monthes in persian.
@@ -297,7 +297,7 @@ class DatexFormatter {
         186 + (($jalali_date['month'] - 6) * 30 + $jalali_date['day']);
     $W = ceil($z / 7);
     $t = $number_of_days[$jalali_date['month']];
-    $r = $persian_date_names['day_abbr'][$jalali_date['week_day']] .
+    $r = $persian_date_names['day_abbr'][$date->format('N')] .
         ', ' . $jalali_date['day'] . ' ' .
         $persian_date_names['months'][$jalali_date['month']] . ' ' .
         $jalali_date['year'] . $date->format('H:i:s P');
