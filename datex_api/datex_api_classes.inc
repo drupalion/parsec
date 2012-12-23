@@ -637,7 +637,12 @@ class DatexObject {
   }
 
   public function setDate($year, $month, $day) {
+    $year = $year === NULL ? $this->format('Y') : $year;
+    $month = $month === NULL ? $this->format('n') : $month;
+    $day = $day === NULL ? $this->format('j') : $day;
+
     $date = DatexFormatter::toGregorian($year, $month, $day);
+
     return $this->xsetDate($date['year'], $date['month'], $date['day']);
   }
 
@@ -747,15 +752,30 @@ class DatexObject {
     return $this->dateobj->modify($modify);
   }
 
-
+  /**
+   * Returns a Jalali Object from a given date.
+   *
+   * @param mixed $date @see DatexFormatter::getDateObject
+   * @return DatexObject
+   */
   public static function getJalaliObject($date = NULL) {
     return new DatexObject($date, FALSE);
   }
 
+  /**
+   * Returns an object containing first day of Jalali month stored in this object.
+   *
+   * @return DateObject
+   */
   public function monthFirstDay() {
     return DatexObjectUtils::monthFirstDay(clone($this));
   }
 
+  /**
+   * Returns an object containing last day of Jalali month stored in this object.
+   *
+   * @return DateObject
+   */
   public function monthLastDay() {
     return DatexObjectUtils::monthLastDay(clone($this));
   }
@@ -822,7 +842,7 @@ class DatexObject {
   public function difference($date2_in, $measure = 'seconds', $absolute = TRUE) {
     // Create cloned objects or original dates will be impacted by the
     // date_modify() operations done in this code.
-    if (get_class($date2_in) != 'DatexObject' || $date2_in->hasError || $this->hasError) {
+    if (get_class($date2_in) != 'DatexObject') {
       return NULL;
     }
     $date1 = $this->getDateobjClone();
@@ -839,15 +859,19 @@ class DatexObject {
       $date1 = $temp;
       $diff = date_format($date2, 'U') - date_format($date1, 'U');
     }
+
     $year_diff = intval(date_format($date2, 'Y') - date_format($date1, 'Y'));
+
     switch ($measure) {
-      // The easy cases first.
       case 'seconds':
         return $diff;
+
       case 'minutes':
         return $diff / 60;
+
       case 'hours':
         return $diff / 3600;
+
       case 'years':
         return $year_diff;
 
@@ -897,7 +921,6 @@ class DatexObject {
   }
 
 }
-
 
 /**
  * methods of this class need DatexObject to exists, So they are not added to
