@@ -7,7 +7,7 @@ function datex_date_help($path, $arg) {
     if ($path == 'admin/help#datex_date') {
         $output = '<p>';
         $output .= t('By enabling Datex Date, Gregorian dates generates by');
-        $output .= t(' <em>date module</em> ');
+        $output .= t('<em> Date module </em>');
         $output .= t('will be displayed in Jalali format.');
         $output .= '<br/>';
         $output .= t('When storing date fields, they will be converted back to Gregorian format');
@@ -17,30 +17,31 @@ function datex_date_help($path, $arg) {
         $output .= '</p>';
         return $output;
     }
+    return TRUE;
 }
 
 /**
  * Implemetns hook_date_formatter_dates_alter()
- * 
- * Every date field is converted to Jalali format before it's rendering for 
- * display in a node.
+ *
+ * Every date field is converted to Jalali format before it's rendering for
+ * display.
  */
 function datex_date_date_formatter_dates_alter(&$dates, $context) {
     global $language;
     if ($language->language == 'fa') {
         $cache = cache_get('dx-' . $dates['value']['formatted_iso']);
         if (empty($cache->data)) {
-            $cache = datex_format(strtotime($dates['value']['formatted_iso']), $context['format']);
+            $cache = DatexFormatter::format(strtotime($dates['value']['formatted_iso']), $context['format']);
             cache_set('dx-' . $dates['value']['formatted_iso'], $cache);
             $dates['value']['formatted'] = $cache;
         }
         else {
             $dates['value']['formatted'] = $cache->data;
-
         }
+
         $cache2 = cache_get('dx-' . $dates['value2']['formatted_iso']);
         if (empty($cache2->data)) {
-            $cache2 = datex_format(strtotime($dates['value2']['formatted_iso']), $context['format']);
+            $cache2 = DatexFormatter::format(strtotime($dates['value2']['formatted_iso']), $context['format']);
             cache_set('dx' . $dates['value2']['formatted_iso'], $cache2);
             $dates['value2']['formatted'] = $cache2;
         }
@@ -52,7 +53,7 @@ function datex_date_date_formatter_dates_alter(&$dates, $context) {
 
 /**
  * Implements hook date_select_process_alter().
- * 
+ *
  * Any date field in date form is converted to jalali before rendering on a edit
  * form and will later be converted back to Gregorian.
  * @see datex_date_date_select_pre_validate_alter
@@ -60,38 +61,21 @@ function datex_date_date_formatter_dates_alter(&$dates, $context) {
 function datex_date_date_select_process_alter(&$element, &$form_state, $context) {
     global $language;
     if ($language->language == 'fa') {
-        $persian_date_names = DatexObject::persian_date_names();
-        $default_value = new DatexObject(new DateObject($element['#default_value']));
-        dpm($default_value);
-        
-        //Generating Select List Widget default values:
-        //even if #default value is empty string it will be evaluated as FALSE
-        //in datex_to_jalali and default (now) will be used,that's what we want.
-        if (array_key_exists('#default_value', $element['year'])) {
-            $default['year'] = $element['year']['#default_value'];
-        } else {
-            $default['year'] = FALSE;
-        }
-        if (array_key_exists('#default_value', $element['month'])) {
-            $default['month'] = $element['month']['#default_value'];
-        } else {
-            $default['month'] = FALSE;
-        }
-        if (array_key_exists('#default_value', $element['day'])) {
-            $default['day'] = $element['day']['#default_value'];
-        } else {
-            $default['day'] = FALSE;
-        }
+        $persian_date_names = DatexFormatter::persianDateNames();
 
-        $default = DatexObject::to_jalali($default['year'], $default['month'], $default['day']);
+        $default = DatexFormatter::toJalali(
+            @$element['year']['#default_value'],
+            @$element['month']['#default_value'],
+            @$element['day']['#default_value']
+            );
 
-        if (in_array('year', $element['#granularity'])) {
+        if (in_array('year', $element['#granularity']) && array_key_exists('#default_value', $element['year'])) {
             $element['year']['#default_value'] = $default['year'];
         }
-        if (in_array('month', $element['#granularity'])) {
+        if (in_array('month', $element['#granularity'])&&array_key_exists('#default_value', $element['month'])) {
             $element['month']['#default_value'] = $default['month'];
         }
-        if (in_array('day', $element['#granularity'])) {
+        if (in_array('day', $element['#granularity']) && array_key_exists('#default_value', $element['day'])) {
             $element['day']['#default_value'] = $default['day'];
         }
 
@@ -107,13 +91,10 @@ function datex_date_date_select_process_alter(&$element, &$form_state, $context)
             //if year field is not required, add an empty value as drupal does.
             if (!$element['#required']) {
                 $element['year']['#options'][''] = '';
-                $element['month']['#options'][''] = '';
-                $element['day']['#options'][''] = '';
             }
 
             //now add actual year options
-            $year_now = DatexObject::to_jalali();
-            $year_now = $year_now['year'];
+            $year_now = DatexFormatter::getYear();
             for ($year = $year_now + $year_before; $year <= $year_now + $year_after; $year++) {
                 $element['year']['#options'][$year] = $year;
             }
@@ -127,7 +108,7 @@ function datex_date_date_select_process_alter(&$element, &$form_state, $context)
             if (!$element['#required']) {
                 $element['month']['#options'][''] = '';
             }
-            
+
             //now add month options
             for ($i = 1; $i < 13; $i++) {
                 $element['month']['#options'][$i] = $persian_date_names['months'][$i];
@@ -141,7 +122,7 @@ function datex_date_date_select_process_alter(&$element, &$form_state, $context)
 
 /**
  * Implements hook_date_date_select_pre_validate_alter
- * 
+ *
  * Convert back a Jalali to Gregorian (which was converted peroir to display
  * on a edit form).
  */
@@ -150,21 +131,16 @@ function datex_date_date_select_pre_validate_alter(&$element, &$form_state, &$in
     if ($language->language == 'fa') {
         $field_name = $element['#instance']['field_name'];
         $delta = $element['#delta'];
-        $y = &$form_state['input'][$field_name]['und'][$delta]['value']['year'];
-        $m = &$form_state['input'][$field_name]['und'][$delta]['value']['month'];
-        $d = &$form_state['input'][$field_name]['und'][$delta]['value']['day'];
-        $dates = DatexObject::to_gregorian($y, $m, $d);
-        list($y,$m,$d) = array($dates['year'], $dates['month'], $dates['day']);
-//        $date = DatexObject::to_gregorian($y, $m, $d);
-//        $form_state['input'][$field_name]['und'][$delta]['value']['year'] = $date['year'];
-//        $form_state['input'][$field_name]['und'][$delta]['value']['month'] = $date['month'];
-//        $form_state['input'][$field_name]['und'][$delta]['value']['day'] = $date['day'];
+        $dates = DatexFormatter::toGregorian(
+            $form_state['input'][$field_name]['und'][$delta]['value']['year'],
+            $form_state['input'][$field_name]['und'][$delta]['value']['month'],
+            $form_state['input'][$field_name]['und'][$delta]['value']['day']
+            );
+
+        list(
+            $form_state['input'][$field_name]['und'][$delta]['value']['year'],
+            $form_state['input'][$field_name]['und'][$delta]['value']['month'],
+            $form_state['input'][$field_name]['und'][$delta]['value']['day'])
+            = array($dates['year'], $dates['month'], $dates['day']);
     }
 }
-
-///**
-// * Implements hook_date_date_text_process_alter 
-// */
-//function datex_date_date_text_process_alter(&$element, &$form_state, $context) {
-//    $granularities = date_format_order($element['#date_format']);
-//}

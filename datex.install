@@ -2,24 +2,25 @@
 
 /**
  * Implements hook_requirements().
- * datex and datex_patched will conflict.
  */
 function datex_requirements($phase) {
-    $requirements = array();
-    $t = get_t();
-
-    if ($phase == 'runtime' || $phase == 'install') {
-        $datex_patched = drupal_parse_info_file(drupal_get_path('module', 'datex_patched') . '/datex_patched.info');
-        $requirements['datex_conflict'] = array(
-            'title' => $t('Datex'),
-            'value' => $datex_patched['version'],
-            'description' => $t('Datex will confilict with Datex Patched and will cause unexpected behaviour.'),
-            'severity' => REQUIREMENT_ERROR,
-        );
-
-        if (!module_exists('datex_patched')) {
-            $requirements['datex_conflict']['severity'] = REQUIREMENT_OK;
-        }
-    }
-    return $requirements;
+//    $requirements = array();
+//    $t = get_t();
+//
+//    if ($phase == 'runtime' || $phase == 'install') {
+//        //get current datex version
+//        $datex = drupal_parse_info_file(drupal_get_path('module', 'datex') . '/datex.info');
+//        $requirements['datex_patched_conflict'] = array(
+//            'title' => $t('Datex'),
+//            'value' => $datex['version'],
+//            'description' => $t('Datex Patched will confilict with Datex and will cause unexpected behaviour.'),
+//            'severity' => REQUIREMENT_ERROR,
+//        );
+//
+//        if (!module_exists('datex')) {
+//            $requirements['datex_patched_conflict']['severity'] = REQUIREMENT_OK;
+//        }
+//    }
+//    return $requirements;
+  return array();
 }

@@ -1,15 +1,13 @@
 name = Datex
-description = Makes Jalali date format available, this module does not require Drupal Installation to be patched but has limited functionality.
+description = Makes Jalali date format available, this module does requires Drupal Installation to be patched.
 package = Date/Time
 core = 7.x
 php = 5.2
 version = 1.x
+
 dependencies[] = datex_api
 
-configure = admin/config/regional/date-time/datex
+;configure = admin/config/regional/date-time/datex
 
 ;files
 files[] = datex.module
-;views
-files[] = views/datex.views.inc
-files[] = views/views_handler_field_datex.inc

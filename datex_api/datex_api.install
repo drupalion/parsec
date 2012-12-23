@@ -11,18 +11,16 @@ function datex_api_requirements($phase) {
 
 
   $requirements['datex_intl'] = array(
-    'title' => $t('php-intl avalibality'),
+    'title' => $t('PHP Intl Avalibality'),
     'value' => $t(
-        '%datex_api works much better and more smoothly, if php-intl is available.', array(
-      'datex_api' => 'Datex API',
-      'datex_patched' => 'Datex Patched',
-        )
+        '%datex_api works much better and more smoothly, if php-intl is available.',
+      array('datex_api' => 'Datex API')
     ),
     'description' => $t('php-intl is new PHP Internationalazation class, Supporting all the calendars available, using php-intl, datex internal methods will not be needed any more since php-intl is faster and better.'),
     'severity' => REQUIREMENT_INFO,
   );
 
-  if (!class_exists('IntlDateFormatter')) {
+  if (class_exists('IntlDateFormatter')) {
     $requirements['datex_conflict']['severity'] = REQUIREMENT_OK;
   }
 

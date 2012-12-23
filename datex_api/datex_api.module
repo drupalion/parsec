@@ -1,6 +1,7 @@
 <?php
 
 module_load_include('inc', 'datex_api', 'datex_api_classes');
+//require_once 'datex_api_classes.inc';
 
 /**
  * @file Helper functions for converting date formats. Required by datex.
@@ -23,15 +24,11 @@ function datex_api_menu() {
   return $items;
 }
 
-function datex_api_parser_jalali_str_to_gregorian($date_orig, $format, $reset = FALSE) {
-  $persian_date_names = &drupal_static(__FUNCTION__);
-  if (!isset($persian_date_names) || $reset) {
-    $persian_date_names = datex_api_persian_names();
-  }
-
-  if (array_key_exists($format, system_get_date_types())) {
-    $format = variable_get('date_format_' . $format);
-  }
+/*
+ * Experimental, dont use!
+ */
+function datex_api_parse_jalali_from_format($date_orig, $format, $reset = FALSE) {
+  $persian_date_names = DatexFormatter::persianDateNames();
 
   list($day, $month, $year, $hour, $minute, $second, $ampm) = array(
     NULL,
@@ -297,12 +294,13 @@ function datex_api_parser_jalali_str_to_gregorian($date_orig, $format, $reset = 
   return array($day, $month, $year, $hour, $minute, $second, $ampm);
 }
 
-function datex_format($date_orig, $format, $reset = FALSE) {
-  static $formatter;
-  if (!$formatter) {
-    new DatexFormatter();
-  }
-
-  return datex_api_parser_to_jalali($date_orig, $format, $reset);
+/**
+ * Alias of DatexFormater::format
+ */
+function datex_format($date, $format, $use_intl) {
+  return DatexFormatter::format($date, $format, $use_intl);
 }
 
+function datex_date($format, $timestamp = NULL) {
+  return DatexFormatter::date($format, $timestamp);
+}

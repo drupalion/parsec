@@ -1,0 +1,193 @@
+<?php
+
+/**
+ * @todo: what happens if one of granularities are not given?
+ */
+
+/**
+ * Implements hook_help().
+ */
+function datex_u_help($path, $arg) {
+    if ($path == 'admin/help#datex_u') {
+        $output = '<p>';
+        $output .= t('By enabling Datex, Gregorian dates generates by');
+        $output .= t('<em> date module </em>');
+        $output .= t('will be displayed in Jalali format.');
+        $output .= '</p><p>';
+        $output .= t('Note that Datex will not change display of dates when UI language is not Persian.');
+        $output .= '</p><p>';
+        $output .= t('This module does not need Drupal installation to be patched but has limited functionality.');
+        $output .= t('If you want a full feautured module, use datex_u patched instead.');
+        $output .= '<br/>';
+        $output .= t('Ofcourse you have to patch Drupal (unfortunately), But let\'s all hope drupal 8 will be realeased');
+        $output .= ' ';
+        $output .= t('Since it supports all calendars using php Intl.');
+        return $output;
+    } 
+}
+
+/**
+ * Implements hook_menu().
+ */
+function datex_u_menu() {
+    $items = array();
+    $items['admin/config/regional/date-time/datex_u'] = array(
+        'title' => 'Datex',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('datex_u_admin'),
+        'access arguments' => array('access administration pages'),
+        'type' => MENU_LOCAL_TASK,
+    );
+    return $items;
+}
+
+/**
+ * Provides administration form for datex_u module.
+ * @return drupal form
+ */
+function datex_u_admin() {
+    global $user;
+
+    $form = array();
+
+    $form['#prefix'] = t('<h2>Datex Administration</h2>');
+
+    $form['datex_u_formats'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Datex formats'),
+        '#weight' => -10,
+        '#collapsible' => TRUE,
+        '#collapsed' => FALSE,
+    );
+
+    $options = array();
+    foreach (system_get_date_types() as $key => $value) {
+        $format = variable_get('date_format_' . $value['type']);
+        $date = DatexFormatter::format(time(), $format);
+        $options[$value['type']] = t('@date_format', array('@date_format' => $value['title'])) . ': ' . $date;
+    }
+    //Default formats for different occasions:
+    $form['datex_u_formats']['datex_u_node_format'] = array(
+        '#type' => 'select',
+        '#title' => t('Content types date format'),
+        '#default_value' => variable_get('datex_u_node_format', 'medium'),
+        '#description' => t('Default format which datex_u will use when displaying nodes. This option does not apply to fields created by date module.'),
+        '#options' => $options,
+    );
+
+    $form['datex_u_formats']['datex_u_comment_format'] = array(
+        '#type' => 'select',
+        '#title' => t('Comments date format'),
+        '#default_value' => variable_get('datex_u_comment_format', 'medium'),
+        '#description' => t('Default format which datex_u will use when displaying comments. This option does not apply to fields created by date module.'),
+        '#options' => $options,
+    );
+
+    $form['datex_u_string'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Date String'),
+        '#weight' => -9,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+    );
+    $options = array(
+        'submission' => t(
+                'Submission date: Submitted by !username on 1391-4-23.', array('!username' => $user->name)),
+        'update' => t(
+                'Update date: Updated by !username on 1392-5-24.', array('!username' => $user->name)),
+        'pub-sub' => t(
+                'Publish date (using submission date): Published by !username on 1391-4-23.', array('!username' => $user->name)),
+        'pub-up' => t(
+                'Publish date (using update date): Published by !username on 1392-5-24.', array('!username' => $user->name)),
+    );
+
+    //Which date belonging to a node should be used when it's being displayed.
+    $form['datex_u_string']['datex_u_which_date'] = array(
+        '#type' => 'radios',
+        '#title' => t('Date to use'),
+        '#default_value' => variable_get('datex_u_which_date', 'submission'),
+        '#description' => t('When a node is being displayed, datex_u will display date according to string specified here.'),
+        '#options' => $options,
+    );
+
+    return system_settings_form($form);
+}
+
+/**
+ * Implements hook_preprocess_node()
+ * 
+ * Convert Publishing date to Jalali format in a node before display.
+ */
+function datex_u_preprocess_node(&$var) {
+    global $language;
+    if ($language->language == 'fa') {
+        $which = variable_get('datex_u_which_date', 'creation');
+        switch ($which) {
+            case 'update':
+                $var['submitted'] = t('Updated by !username on @date.', array(
+                    '!username' => $var['name'],
+                    '@date' => DatexFormatter::format(intval($var['changed']), 'datex_node_format')
+                        ));
+                break;
+
+            case 'pub-up':
+                $var['submitted'] = t('Published by !username on @date.', array(
+                    '!username' => $var['name'],
+                    '@date' => DatexFormatter::format(intval($var['changed']), 'datex_node_format')
+                        ));
+                break;
+
+            case 'pub-sub':
+                $var['submitted'] = t('Published by !username on @date.', array(
+                    '!username' => $var['name'],
+                    '@date' => DatexFormatter::format(intval($var['created']), 'datex_node_format')
+                        ));
+                break;
+
+            case 'submission':
+            default:
+                $var['submitted'] = t('Submitted by !username on @date.', array(
+                    '!username' => $var['name'],
+                    '@date' => DatexFormatter::format(intval($var['created']), 'datex_node_format')
+                        ));
+                break;
+        }
+    }
+}
+
+/**
+ * Implements hook_preprocess_comment()
+ * 
+ * Convert Publishing date to Jalali format in a comment before display.
+ */
+function datex_u_preprocess_comment(&$var) {
+    global $language;
+    if ($language->language == 'fa') {
+        $var['created'] = DatexFormatter::format($var['elements']['#comment']->created, 'datex_comment_format');
+        $var['changed'] = DatexFormatter::format($var['elements']['#comment']->changed, 'datex_comment_format');
+    }
+}
+
+/**
+ * Implements hook_views_api().
+ * 
+ * Needed for declaring date field handler in views.
+ */
+function datex_u_views_api() {
+    return array(
+        'api' => 3,
+        'path' => drupal_get_path('module', 'datex_u') . '/views',
+    );
+}
+
+//function datex_u_form_node_admin_content_alter(&$form, &$form_state, $form_id) {
+//    global $language;
+//
+//    if ($language->language == 'fa') {
+//        foreach ($form['admin']['nodes']['#options'] as &$node) {
+//            $date = DateTime::createFromFormat('Y M j - g:ia', $node['changed']);
+//            $date = DatexFormatter::format($date, 'medium');
+//            $node['changed'];
+//        }
+//    }
+//}

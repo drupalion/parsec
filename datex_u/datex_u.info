@@ -1,0 +1,15 @@
+name = Datex U
+description = This module is deprecated, use Datex instead.
+package = Date/Time
+core = 7.x
+php = 5.2
+version = 1.x
+dependencies[] = datex_api
+
+configure = admin/config/regional/date-time/datex_u
+
+;files
+files[] = datex_u.module
+;views
+files[] = views/datex_u.views.inc
+files[] = views/views_handler_field_datex_u.inc

@@ -10,7 +10,7 @@ function datex_api_menu_callback() {
   $form['datex_api_intl'] = array(
     '#type' => 'radios',
     '#title' => t('Date conversion method'),
-    '#default_value' => variable_get('datex_api_intl', 'datex_intl'),
+    '#default_value' => variable_get('datex_api_intl', 0),
     '#description' => t('Which method datex should use. Intl is experimental'),
     '#options' => array(1 => 'Use INTL', 0 => t('Use datex internal methods.')),
   );

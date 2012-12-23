@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * Implements hook_requirements().
+ * datex and datex_patched will conflict.
+ */
+function datex_u_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+
+  //$datex_patched = drupal_parse_info_file(
+  //drupal_get_path('module', 'datex_patched') . '/datex_patched.info');
+
+  $requirements['datex_u_deprecated'] = array(
+    'title' => $t('Datex U'),
+    //'value' => $datex_patched['version'],
+    //'description' => $t('Datex will confilict with Datex Patched and will
+    //cause unexpected behaviour.'),
+    'description' => $t('Datex U is deprecated, use Datex instead.'),
+    'severity' => REQUIREMENT_ERROR,
+  );
+
+//        if (!module_exists('datex_patched')) {
+//            $requirements['datex_conflict']['severity'] = REQUIREMENT_OK;
+//        }
+  return $requirements;
+}
