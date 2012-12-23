@@ -276,10 +276,14 @@ class Date {
    * @return mixed
    */
   private function isLeap($yearValue) {
-    $Rasad = $this->calcRasad($yearValue);
-    $yrNam = $Rasad % 2820;
+    $yrNam = ($yearValue + 2346) % 2820;
     $yrNam = $yrNam % 128;
-    $leapCount = array_search($yrNam, $this->_khayamii);
+    $leapCount = array_search($yrNam, array(
+      5, 9, 13, 17, 21, 25, 29,
+      34, 38, 42, 46, 50, 54, 58, 62,
+      67, 71, 75, 79, 83, 87, 91, 95,
+      100, 104, 108, 112, 116, 120, 124, 0
+        ));
     return $leapCount;
   }
 
