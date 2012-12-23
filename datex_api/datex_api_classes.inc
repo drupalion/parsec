@@ -751,6 +751,15 @@ class DatexObject {
   public static function getJalaliObject($date = NULL) {
     return new DatexObject($date, FALSE);
   }
+
+  public function monthFirstDay() {
+    return DatexObjectUtils::monthFirstDay(clone($this));
+  }
+
+  public function monthLastDay() {
+    return DatexObjectUtils::monthLastDay(clone($this));
+  }
+
   //############################DATE_OBJCT##
 
 
@@ -889,6 +898,11 @@ class DatexObject {
 
 }
 
+
+/**
+ * methods of this class need DatexObject to exists, So they are not added to
+ * DatexFormatter.
+ */
 class DatexObjectUtils {
 
   /**
@@ -897,7 +911,7 @@ class DatexObjectUtils {
    * @param mixed $date @see DatexFormatter::getDateObject
    */
   public static function monthFirstDay ($date = NULL) {
-    $date = new DatexObject($date);
+    $date = new DatexObject($date, FALSE);
     $date->setDate($date->format('Y'), $date->format('m'), 1);
     return $date;
   }
@@ -908,7 +922,7 @@ class DatexObjectUtils {
    * @param mixed $date @see DatexFormatter::getDateObject
    */
   public static function monthLastDay ($date = NULL) {
-    $date = new DatexObject($date);
+    $date = new DatexObject($date, FALSE);
     $date->setDate($date->format('Y'), $date->format('m'), DatexFormatter::format($date, 't'));
     return $date;
   }
