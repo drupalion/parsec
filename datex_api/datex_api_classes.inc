@@ -509,8 +509,8 @@ class DatexFormatter {
     return $date['day'];
   }
 
-  //utils
-  
+  //php utils
+
   /**
    * @see php date().
    */
@@ -583,7 +583,7 @@ class DatexObject {
     $this->hasError = FALSE;
     $this->error = '';
     $this->error_message = '';
-    $this->setDate($datetime, $date_is_gregorian, $tz);
+    $this->setDatetime($datetime, $date_is_gregorian, $tz);
     $format = $format ? $format : 'Y-m-d';
     $this->setFormat($format);
     return $this;
@@ -623,7 +623,7 @@ class DatexObject {
    * otherwise it's jalali.
    * @param DateTimeZone  $tz
    */
-  public function setDate($datetime = NULL, $date_is_gregorian = DEFAULT_DATEXOBJECT_POLICY, $tz = NULL) {
+  public function setDatetime($datetime = NULL, $date_is_gregorian = DEFAULT_DATEXOBJECT_POLICY, $tz = NULL) {
     if ($date_is_gregorian) {
       $this->dateobj = DatexFormatter::ObjectFromDate($datetime);
     }
@@ -634,6 +634,11 @@ class DatexObject {
     if ($tz) {
       $this->dateobj->setTimezone($tz);
     }
+  }
+
+  public function setDate($year, $month, $day) {
+    $date = DatexFormatter::toGregorian($year, $month, $day);
+    return $this->xsetDate($date['year'], $date['month'], $date['day']);
   }
 
   /**
@@ -742,6 +747,10 @@ class DatexObject {
     return $this->dateobj->modify($modify);
   }
 
+
+  public static function getJalaliObject($date = NULL) {
+    return new DatexObject($date, FALSE);
+  }
   //############################DATE_OBJCT##
 
 
@@ -878,4 +887,29 @@ class DatexObject {
     return NULL;
   }
 
+}
+
+class DatexObjectUtils {
+
+  /**
+   * Returns minumun day of a month
+   *
+   * @param mixed $date @see DatexFormatter::getDateObject
+   */
+  public static function monthFirstDay ($date = NULL) {
+    $date = new DatexObject($date);
+    $date->setDate($date->format('Y'), $date->format('m'), 1);
+    return $date;
+  }
+
+  /**
+   * Returns minumun day of a month
+   *
+   * @param mixed $date @see DatexFormatter::getDateObject
+   */
+  public static function monthLastDay ($date = NULL) {
+    $date = new DatexObject($date);
+    $date->setDate($date->format('Y'), $date->format('m'), DatexFormatter::format($date, 't'));
+    return $date;
+  }
 }
