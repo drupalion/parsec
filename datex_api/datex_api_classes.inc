@@ -152,7 +152,7 @@ class DatexFormatter {
    * @param bool $leap will become TRUE if given Jalali year is a leap year.
    * @return array
    */
-  public static function toGregorian($jalaliYear = NULL, $jalaliMonth = NULL, $jalaliDay = NULL, &$leap) {
+  public static function toGregorian($jalaliYear = NULL, $jalaliMonth = NULL, $jalaliDay = NULL) {
     $now = self::toJalali();
     if (!$jalaliDay) {
       $jalaliDay = $now['day'];
@@ -181,7 +181,7 @@ class DatexFormatter {
     $gYear = 1600 + 400 * intval($gregorianDayNo / 146097);
     $gregorianDayNo = $gregorianDayNo % 146097;
 
-    $leap = true;
+    $leap = TRUE;
     if ($gregorianDayNo >= 36525) {
       $gregorianDayNo--;
       $gYear += 100 * intval($gregorianDayNo / 36524);
@@ -191,7 +191,7 @@ class DatexFormatter {
         $gregorianDayNo++;
       }
       else {
-        $leap = false;
+        $leap = FALSE;
       }
     }
 
@@ -199,7 +199,7 @@ class DatexFormatter {
     $gregorianDayNo %= 1461;
 
     if ($gregorianDayNo >= 366) {
-      $leap = false;
+      $leap = FALSE;
 
       $gregorianDayNo--;
       $gYear += intval($gregorianDayNo / 365);
@@ -212,7 +212,8 @@ class DatexFormatter {
     $gMonth = $i + 1;
     $gDay = $gregorianDayNo + 1;
 
-    return array('year' => $gYear, 'month' => $gMonth, 'day' => $gDay);
+    $ret =  array('year' => $gYear, 'month' => $gMonth, 'day' => $gDay);
+    return $ret;
   }
 
   /**
@@ -303,17 +304,10 @@ class DatexFormatter {
         $persian_date_names['months'][$jalali_date['month']] . ' ' .
         $jalali_date['year'] . $date->format('H:i:s P');
 
-    $L = FALSE;
-    self::toGregorian($jalali_date['year'],$jalali_date['month'],$jalali_date['day'], $L);
+    $L = self::isLeap($jalali_date['year']) ? 1 : 0;
 
-    if($L) {
-      $L = 1;
-      if ($jalali_date['month'] == 12) {
-        $t = 30;
-      }
-    }
-    else {
-      $L = 0;
+    if($L && $jalali_date['month'] == 12) {
+      $t = 30;
     }
 
     $format = preg_replace('/[\\\\][a-z]/', '', $format);
@@ -370,7 +364,6 @@ class DatexFormatter {
    * @return string
    */
   public static function formatINTL($date, $format, &$error_code = NULL, &$error_message = NULL) {
-    echo "in INTL";
     static $intl_formatter = NULL;
     if ($intl_formatter == NULL) {
       $intl_formatter = new IntlDateFormatter(
@@ -557,6 +550,24 @@ class DatexFormatter {
     $ret['month'] = self::formatPHP($date, 'F');
     $ret[0] = $timestamp;
     return $ret;
+  }
+
+  /**
+   * Returns 1 if given year is a leap year
+   *
+   * Algorithm:
+   * @author Amin <amin.w3dev@gmail.com>
+   * @copyright (c) 2012, AMSA
+   *
+   * @param int $year
+   */
+  public static function isLeap($yearValue) {
+    return array_search((($yearValue + 2346) % 2820) % 128, array(
+          5, 9, 13, 17, 21, 25, 29,
+          34, 38, 42, 46, 50, 54, 58, 62,
+          67, 71, 75, 79, 83, 87, 91, 95,
+          100, 104, 108, 112, 116, 120, 124, 0
+        ));
   }
 
 }
@@ -952,21 +963,5 @@ class DatexObjectUtils {
     $date = new DatexObject($date, FALSE);
     $date->setDate(NULL, NULL, DatexFormatter::format($date, 't'));
     return $date;
-  }
-
-}
-
-
-function koosha($jalaliYear = NULL) {
-  echo 'koosha';
-  $gdn = 365 * $jalaliYear - 979 + intval(($jalaliYear - 979) / 33) * 8 + intval(((($jalaliYear - 979) % 33) + 3) / 4) + 79;
-  $leap = true;
-  if (gdn >= 36525) {
-    $gdn--;
-    $gdn = $gdn % 36524;
-
-    if ($gregorianDayNo < 365) {
-      echo 'no leap';
-    }
   }
 }
