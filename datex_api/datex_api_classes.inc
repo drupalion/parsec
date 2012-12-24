@@ -212,7 +212,7 @@ class DatexFormatter {
     $gMonth = $i + 1;
     $gDay = $gregorianDayNo + 1;
 
-    $ret =  array('year' => $gYear, 'month' => $gMonth, 'day' => $gDay);
+    $ret = array('year' => $gYear, 'month' => $gMonth, 'day' => $gDay);
     return $ret;
   }
 
@@ -306,7 +306,7 @@ class DatexFormatter {
 
     $L = self::isLeap($jalali_date['year']) ? 1 : 0;
 
-    if($L && $jalali_date['month'] == 12) {
+    if ($L && $jalali_date['month'] == 12) {
       $t = 30;
     }
 
@@ -783,7 +783,7 @@ class DatexObject {
    * @return DateObject
    */
   public function monthFirstDay() {
-    return DatexObjectUtils::monthFirstDay(clone($this));
+    return DatexObjectUtils::monthFirstDay($this->dateobj);
   }
 
   /**
@@ -792,68 +792,10 @@ class DatexObject {
    * @return DateObject
    */
   public function monthLastDay() {
-    return DatexObjectUtils::monthLastDay(clone($this));
+    return DatexObjectUtils::monthLastDay($this->dateobj);
   }
 
   //############################DATE_OBJCT##
-
-
-  public function merge(FeedsDateTime $other) {
-
-  }
-
-  public function addGranularity($g) {
-
-  }
-
-  public function removeGranularity($g) {
-
-  }
-
-  public function hasGranularity($g = NULL) {
-
-  }
-
-  public function validGranularity($granularity = NULL, $flexible = FALSE) {
-
-  }
-
-  public function hasTime() {
-
-  }
-
-  public function completeDate() {
-
-  }
-
-  public function limitGranularity($granularity) {
-
-  }
-
-  public function toArray() {
-    return array(
-      'year' => $this->format('Y'),
-      'month' => $this->format('n'),
-      'day' => $this->format('j'),
-      'hour' => intval($this->format('H')),
-      'minute' => intval($this->format('i')),
-      'second' => intval($this->format('s')),
-      'timezone' => $this->format('e'),
-    );
-  }
-
-  public function toISO($arr, $full = FALSE) {
-
-  }
-
-  public function setFuzzyDate($date, $format = NULL, $default = 'first') {
-
-  }
-
-  public function arrayErrors($arr) {
-
-  }
-
   public function difference($date2_in, $measure = 'seconds', $absolute = TRUE) {
     // Create cloned objects or original dates will be impacted by the
     // date_modify() operations done in this code.
@@ -935,6 +877,64 @@ class DatexObject {
     return NULL;
   }
 
+  public function toArray() {
+    return array(
+      'year' => $this->format('Y'),
+      'month' => $this->format('n'),
+      'day' => $this->format('j'),
+      'hour' => intval($this->format('H')),
+      'minute' => intval($this->format('i')),
+      'second' => intval($this->format('s')),
+      'timezone' => $this->format('e'),
+    );
+  }
+
+  //##############NOT IMPLEMENTED YET, IN ROAD MAP
+
+  public function merge(FeedsDateTime $other) {
+
+  }
+
+  public function addGranularity($g) {
+
+  }
+
+  public function removeGranularity($g) {
+
+  }
+
+  public function hasGranularity($g = NULL) {
+
+  }
+
+  public function validGranularity($granularity = NULL, $flexible = FALSE) {
+
+  }
+
+  public function hasTime() {
+
+  }
+
+  public function completeDate() {
+
+  }
+
+  public function limitGranularity($granularity) {
+
+  }
+
+  public function toISO($arr, $full = FALSE) {
+
+  }
+
+  public function setFuzzyDate($date, $format = NULL, $default = 'first') {
+
+  }
+
+  public function arrayErrors($arr) {
+
+  }
+
 }
 
 /**
@@ -964,4 +964,5 @@ class DatexObjectUtils {
     $date->setDate(NULL, NULL, DatexFormatter::format($date, 't'));
     return $date;
   }
+
 }

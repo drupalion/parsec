@@ -1,7 +1,6 @@
 <?php
 
 module_load_include('inc', 'datex_api', 'datex_api_classes');
-//require_once 'datex_api_classes.inc';
 
 /**
  * @file Helper functions for converting date formats. Required by datex.
@@ -295,12 +294,19 @@ function datex_api_parse_jalali_from_format($date_orig, $format, $reset = FALSE)
 }
 
 /**
- * Alias of DatexFormater::format
+ * Alias of DatexFormater::format().
  */
 function datex_format($date, $format, $use_intl) {
   return DatexFormatter::format($date, $format, $use_intl);
 }
 
+/**
+ * similar to php date().
+ *
+ * @param type $format
+ * @param type $timestamp
+ * @return type
+ */
 function datex_date($format, $timestamp = NULL) {
   return DatexFormatter::date($format, $timestamp);
 }
