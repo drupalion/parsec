@@ -17,9 +17,9 @@ class DatexFormatter {
    * @param array &$errors array to put errors in.
    * @return string formatted date.
    */
-  public static function format($date, $format, $use_intl = DATEX_USE_INTL, &$error_code = NULL, &$error_message = NULL) {
+  public static function format($date, $format, $use_intl = DATEX_USE_INTL, $formatter_args = NULL, &$error_code = NULL, &$error_message = NULL) {
     if (self::hasINTL() && $use_intl) {
-      return self::formatINTL($date, $format, $error_code, $error_message);
+      return self::formatINTL($date, $format, $formatter_args, $error_code, $error_message);
     }
     else {
       return self::formatPHP($date, $format);
@@ -363,16 +363,27 @@ class DatexFormatter {
    * @param string $format
    * @return string
    */
-  public static function formatINTL($date, $format, &$error_code = NULL, &$error_message = NULL) {
+  public static function formatINTL($date, $format, $formatter_args = NULL, &$error_code = NULL, &$error_message = NULL) {
     static $intl_formatter = NULL;
-    if ($intl_formatter == NULL) {
-      $intl_formatter = new IntlDateFormatter(
-              "fa_IR@calendar=persian",
-              IntlDateFormatter::FULL,
-              IntlDateFormatter::FULL,
-              'Asia/Tehran',
-              IntlDateFormatter::TRADITIONAL
-      );
+    if ($intl_formatter == NULL || isset($formatter_args)) {
+      if (isset($formatter_args)) {
+        $intl_formatter = new IntlDateFormatter(
+                $formatter_args[0],
+                $formatter_args[1],
+                $formatter_args[2],
+                $formatter_args[3],
+                $formatter_args[4]
+        );
+      }
+      else {
+        $intl_formatter = new IntlDateFormatter(
+                "fa_IR@calendar=persian",
+                IntlDateFormatter::FULL,
+                IntlDateFormatter::FULL,
+                'Asia/Tehran',
+                IntlDateFormatter::TRADITIONAL
+        );
+      }
     }
     $intl_formatter->setPattern(self::phpToIntl($format));
     $date = $intl_formatter->format(self::getTimestamp($date));
@@ -553,11 +564,10 @@ class DatexFormatter {
   }
 
   /**
-   * Returns 1 if given year is a leap year
+   * Returns non zero if given year is a leap year
    *
    * Algorithm:
    * @author Amin <amin.w3dev@gmail.com>
-   * @copyright (c) 2012, AMSA
    *
    * @param int $year
    */
@@ -631,7 +641,9 @@ class DatexObject {
   }
 
   /**
-   * Set's date
+   * Set's date from given date.
+   * for accepted list of accepted date formats,@see DatexFormatter::ObjectFromDate
+   * and @see DatexFormatter::ObjectFromJalali
    *
    * @param mixed $datetime @see ObjectFromDate and @see ObjectFromJalali
    * @param boolean $date_is_gregorian if is true, the given date is gregorian
@@ -768,16 +780,6 @@ class DatexObject {
   }
 
   /**
-   * Returns a Jalali Object from a given date.
-   *
-   * @param mixed $date @see DatexFormatter::getDateObject
-   * @return DatexObject
-   */
-  public static function getJalaliObject($date = NULL) {
-    return new DatexObject($date, FALSE);
-  }
-
-  /**
    * Returns an object containing first day of Jalali month stored in this object.
    *
    * @return DateObject
@@ -793,6 +795,10 @@ class DatexObject {
    */
   public function monthLastDay() {
     return DatexObjectUtils::monthLastDay($this->dateobj);
+  }
+
+  public function toArray() {
+    return DatexObjectUtils::toArray($this->dateobj);
   }
 
   //############################DATE_OBJCT##
@@ -865,6 +871,7 @@ class DatexObject {
 
       case 'weeks':
         throw new Exception('week not implemented!');
+        return NULL;
         $week_diff = date_format($date2, 'W') - date_format($date1, 'W');
         $year_diff = date_format($date2, 'o') - date_format($date1, 'o');
         for ($i = 1; $i <= $year_diff; $i++) {
@@ -877,69 +884,22 @@ class DatexObject {
     return NULL;
   }
 
-  public function toArray() {
+  public function xtoArray() {
     return array(
-      'year' => $this->format('Y'),
-      'month' => $this->format('n'),
-      'day' => $this->format('j'),
-      'hour' => intval($this->format('H')),
-      'minute' => intval($this->format('i')),
-      'second' => intval($this->format('s')),
-      'timezone' => $this->format('e'),
+      'year' => $this->dateobj->format('Y'),
+      'month' => $this->dateobj->format('n'),
+      'day' => $this->dateobj->format('j'),
+      'hour' => intval($this->dateobj->format('H')),
+      'minute' => intval($this->dateobj->format('i')),
+      'second' => intval($this->dateobj->format('s')),
+      'timezone' => $this->dateobj->format('e'),
     );
-  }
-
-  //##############NOT IMPLEMENTED YET, IN ROAD MAP
-
-  public function merge(FeedsDateTime $other) {
-
-  }
-
-  public function addGranularity($g) {
-
-  }
-
-  public function removeGranularity($g) {
-
-  }
-
-  public function hasGranularity($g = NULL) {
-
-  }
-
-  public function validGranularity($granularity = NULL, $flexible = FALSE) {
-
-  }
-
-  public function hasTime() {
-
-  }
-
-  public function completeDate() {
-
-  }
-
-  public function limitGranularity($granularity) {
-
-  }
-
-  public function toISO($arr, $full = FALSE) {
-
-  }
-
-  public function setFuzzyDate($date, $format = NULL, $default = 'first') {
-
-  }
-
-  public function arrayErrors($arr) {
-
   }
 
 }
 
 /**
- * methods of this class need DatexObject to exists, So they are not added to
- * DatexFormatter.
+ * Utitilities to work with a DatexObject
  */
 class DatexObjectUtils {
 
@@ -963,6 +923,29 @@ class DatexObjectUtils {
     $date = new DatexObject($date, FALSE);
     $date->setDate(NULL, NULL, DatexFormatter::format($date, 't'));
     return $date;
+  }
+
+  public static function toArray($date = NULL) {
+    $date = new DatexObject($date, FALSE);
+    return array(
+      'year' => $date->format('Y'),
+      'month' => $date->format('n'),
+      'day' => $date->format('j'),
+      'hour' => intval($date->format('H')),
+      'minute' => intval($date->format('i')),
+      'second' => intval($date->format('s')),
+      'timezone' => $date->format('e'),
+    );
+  }
+
+  /**
+   * Returns a Jalali Object from a given date.
+   *
+   * @param mixed $date @see DatexFormatter::getDateObject
+   * @return DatexObject
+   */
+  public static function getJalaliObject($date = NULL) {
+    return new DatexObject($date, FALSE);
   }
 
 }
