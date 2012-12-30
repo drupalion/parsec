@@ -1,7 +1,5 @@
 <?php
 
-module_load_include('inc', 'datex_api', 'datex_api_classes');
-
 /**
  * @file Helper functions for converting date formats. Required by datex.
  */
@@ -23,10 +21,28 @@ function datex_api_menu() {
   return $items;
 }
 
+/**
+ * Provides administration form for datex module.
+ * @return drupal form
+ */
+function datex_api_menu_callback() {
+  $form = array();
+
+  $form['datex_api_intl'] = array(
+    '#type' => 'radios',
+    '#title' => t('Date conversion method'),
+    '#default_value' => variable_get('datex_api_intl', 0),
+    '#description' => t('Which method datex should use. Intl is experimental'),
+    '#options' => array(1 => 'Use INTL', 0 => t('Use datex internal methods.')),
+  );
+
+  return system_settings_form($form);
+}
+
 /*
  * Experimental, dont use!
  */
-function datex_api_parse_jalali_from_format($date_orig, $format, $reset = FALSE) {
+function datex_api_parse_jalali_from_format($date_orig, $format) {
   $persian_date_names = DatexFormatter::persianDateNames();
 
   list($day, $month, $year, $hour, $minute, $second, $ampm) = array(

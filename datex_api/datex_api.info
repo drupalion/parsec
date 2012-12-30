@@ -7,7 +7,5 @@ php = 5.2
 ;files
 files[] = datex_api.module
 files[] = datex_api_classes.inc
-files[] = datex_api.inc
-
 
 configure = admin/config/regional/date-time/datex_api

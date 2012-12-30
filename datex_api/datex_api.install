@@ -21,7 +21,7 @@ function datex_api_requirements($phase) {
   );
 
   if (class_exists('IntlDateFormatter')) {
-    $requirements['datex_conflict']['severity'] = REQUIREMENT_OK;
+    $requirements['datex_intl']['severity'] = REQUIREMENT_OK;
   }
 
   return $requirements;

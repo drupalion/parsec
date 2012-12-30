@@ -1,0 +1,4 @@
+name = Datex Popup
+description = Enables jquery popup calendars and time entry widgets for selecting dates and times in Jalali format.
+package = Date/Time
+core = 7.x

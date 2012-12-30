@@ -660,6 +660,7 @@ class DatexObject {
     if ($tz) {
       $this->dateobj->setTimezone($tz);
     }
+    return $this;
   }
 
   public function setDate($year, $month, $day) {
@@ -669,7 +670,8 @@ class DatexObject {
 
     $date = DatexFormatter::toGregorian($year, $month, $day);
 
-    return $this->xsetDate($date['year'], $date['month'], $date['day']);
+    $this->xsetDate($date['year'], $date['month'], $date['day']);
+    return $this;
   }
 
   /**
@@ -679,6 +681,7 @@ class DatexObject {
    */
   public function setFormat($format) {
     $this->format_string = $format;
+    return $this;
   }
 
   /**
@@ -703,7 +706,8 @@ class DatexObject {
    *
    */
   public function setTimezone(DateTimeZone $timezone) {
-    return $this->dateobj->setTimezone($timezone);
+    $this->dateobj->setTimezone($timezone);
+    return $this;
   }
 
   /**
@@ -711,7 +715,8 @@ class DatexObject {
    *
    */
   public function setTimestamp($timestamp) {
-    return $this->dateobj->setTimestamp($timestamp);
+    $this->dateobj->setTimestamp($timestamp);
+    return $this;
   }
 
   /**
@@ -719,7 +724,8 @@ class DatexObject {
    *
    */
   public function setTime($hour, $minute, $second = 0) {
-    return $this->dateobj->setTime($hour, $minute, $second);
+    $this->dateobj->setTime($hour, $minute, $second);
+    return $this;
   }
 
   /**
@@ -775,7 +781,8 @@ class DatexObject {
    *
    */
   public function modify($modify) {
-    return $this->dateobj->modify($modify);
+    $this->dateobj->modify($modify);
+    return $this;
   }
 
   /**
