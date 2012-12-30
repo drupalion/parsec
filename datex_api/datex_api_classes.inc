@@ -587,7 +587,6 @@ class DatexFormatter {
  * functionallity from object defiend in Drupal's date module DateObject.
  */
 class DatexObject {
-
   private $dateobj;
   public $error;
   public $error_message;
