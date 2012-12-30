@@ -797,17 +797,28 @@ class DatexObject {
     return DatexObjectUtils::monthLastDay($this->dateobj);
   }
 
+  /**
+   * Returns date granularities put in an array.
+   *
+   * @return array
+   */
   public function toArray() {
     return DatexObjectUtils::toArray($this->dateobj);
   }
 
-  //############################DATE_OBJCT##
-  public function difference($date2_in, $measure = 'seconds', $absolute = TRUE) {
+  /**
+   * Returns amount of time difference to another date object.
+   *
+   * @param DatexObject $date2_in
+   * @param string $measure
+   * @param boolean $absolute
+   * @return null|int
+   * @throws Exception if given measure is week, it will throw an exception, it
+   * is not implemented yet.
+   */
+  public function difference(DatexObject $date2_in, $measure = 'seconds', $absolute = TRUE) {
     // Create cloned objects or original dates will be impacted by the
     // date_modify() operations done in this code.
-    if (get_class($date2_in) != 'DatexObject') {
-      return NULL;
-    }
     $date1 = $this->getDateobjClone();
     $date2 = $date2_in->getDateobjClone();
 
@@ -884,6 +895,10 @@ class DatexObject {
     return NULL;
   }
 
+  /**
+   *
+   * @return type
+   */
   public function xtoArray() {
     return array(
       'year' => $this->dateobj->format('Y'),
