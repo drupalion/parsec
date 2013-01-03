@@ -31,7 +31,7 @@ function datex_date_date_formatter_dates_alter(&$dates, $context) {
   if ($language->language == 'fa') {
     $cache = cache_get('dx-' . $dates['value']['formatted_iso']);
     if (empty($cache->data)) {
-      $cache = DatexFormatter::format(strtotime($dates['value']['formatted_iso']), $context['format']);
+      $cache = DatexFormatter::format(strtotime($dates['value']['formatted_iso']), $context['format'],  variable_get('datex_api_intl', 0));
       cache_set('dx-' . $dates['value']['formatted_iso'], $cache);
       $dates['value']['formatted'] = $cache;
     }
@@ -39,14 +39,14 @@ function datex_date_date_formatter_dates_alter(&$dates, $context) {
       $dates['value']['formatted'] = $cache->data;
     }
 
-    $cache2 = cache_get('dx-' . $dates['value2']['formatted_iso']);
-    if (empty($cache2->data)) {
-      $cache2 = DatexFormatter::format(strtotime($dates['value2']['formatted_iso']), $context['format']);
-      cache_set('dx' . $dates['value2']['formatted_iso'], $cache2);
-      $dates['value2']['formatted'] = $cache2;
+    $cache = cache_get('dx-' . $dates['value2']['formatted_iso']);
+    if (empty($cache->data)) {
+      $cache = DatexFormatter::format(strtotime($dates['value2']['formatted_iso']), $context['format'], variable_get('datex_api_intl', 0));
+      cache_set('dx' . $dates['value2']['formatted_iso'], $cache);
+      $dates['value2']['formatted'] = $cache;
     }
     else {
-      $dates['value2']['formatted'] = $cache2->data;
+      $dates['value2']['formatted'] = $cache->data;
     }
   }
 }
