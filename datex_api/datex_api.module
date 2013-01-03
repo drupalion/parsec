@@ -39,8 +39,12 @@ function datex_api_menu_callback() {
   return system_settings_form($form);
 }
 
-/*
+/**
  * Experimental, dont use!
+ * 
+ * @param type $date_orig
+ * @param type $format
+ * @return type
  */
 function datex_api_parse_jalali_from_format($date_orig, $format) {
   $persian_date_names = DatexFormatter::persianDateNames();

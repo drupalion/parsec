@@ -4,20 +4,20 @@
  * Implements hook_help().
  */
 function datex_date_help($path, $arg) {
-    if ($path == 'admin/help#datex_date') {
-        $output = '<p>';
-        $output .= t('By enabling Datex Date, Gregorian dates generates by');
-        $output .= t('<em> Date module </em>');
-        $output .= t('will be displayed in Jalali format.');
-        $output .= '<br/>';
-        $output .= t('When storing date fields, they will be converted back to Gregorian format');
-        $output .= t(' to prevent problems caused by databases not supporting dates other than Gregorian,');
-        $output .= '</p><p>';
-        $output .= t('Please be noted that Datex Date will not change display of dates when UI language is not Persian.');
-        $output .= '</p>';
-        return $output;
-    }
-    return TRUE;
+  if ($path == 'admin/help#datex_date') {
+    $output = '<p>';
+    $output .= t('By enabling Datex Date, Gregorian dates generates by');
+    $output .= t('<em> Date module </em>');
+    $output .= t('will be displayed in Jalali format.');
+    $output .= '<br/>';
+    $output .= t('When storing date fields, they will be converted back to Gregorian format');
+    $output .= t('to prevent problems caused by databases not supporting dates other than Gregorian,');
+    $output .= '</p><p>';
+    $output .= t('Please be noted that Datex Date will not change display of dates when UI language is not Persian.');
+    $output .= '</p>';
+    return $output;
+  }
+  return TRUE;
 }
 
 /**
@@ -27,28 +27,28 @@ function datex_date_help($path, $arg) {
  * display.
  */
 function datex_date_date_formatter_dates_alter(&$dates, $context) {
-    global $language;
-    if ($language->language == 'fa') {
-        $cache = cache_get('dx-' . $dates['value']['formatted_iso']);
-        if (empty($cache->data)) {
-            $cache = DatexFormatter::format(strtotime($dates['value']['formatted_iso']), $context['format']);
-            cache_set('dx-' . $dates['value']['formatted_iso'], $cache);
-            $dates['value']['formatted'] = $cache;
-        }
-        else {
-            $dates['value']['formatted'] = $cache->data;
-        }
-
-        $cache2 = cache_get('dx-' . $dates['value2']['formatted_iso']);
-        if (empty($cache2->data)) {
-            $cache2 = DatexFormatter::format(strtotime($dates['value2']['formatted_iso']), $context['format']);
-            cache_set('dx' . $dates['value2']['formatted_iso'], $cache2);
-            $dates['value2']['formatted'] = $cache2;
-        }
-        else {
-            $dates['value2']['formatted'] = $cache2->data;
-        }
+  global $language;
+  if ($language->language == 'fa') {
+    $cache = cache_get('dx-' . $dates['value']['formatted_iso']);
+    if (empty($cache->data)) {
+      $cache = DatexFormatter::format(strtotime($dates['value']['formatted_iso']), $context['format']);
+      cache_set('dx-' . $dates['value']['formatted_iso'], $cache);
+      $dates['value']['formatted'] = $cache;
     }
+    else {
+      $dates['value']['formatted'] = $cache->data;
+    }
+
+    $cache2 = cache_get('dx-' . $dates['value2']['formatted_iso']);
+    if (empty($cache2->data)) {
+      $cache2 = DatexFormatter::format(strtotime($dates['value2']['formatted_iso']), $context['format']);
+      cache_set('dx' . $dates['value2']['formatted_iso'], $cache2);
+      $dates['value2']['formatted'] = $cache2;
+    }
+    else {
+      $dates['value2']['formatted'] = $cache2->data;
+    }
+  }
 }
 
 /**
@@ -59,65 +59,63 @@ function datex_date_date_formatter_dates_alter(&$dates, $context) {
  * @see datex_date_date_select_pre_validate_alter
  */
 function datex_date_date_select_process_alter(&$element, &$form_state, $context) {
-    global $language;
-    if ($language->language == 'fa') {
-        $persian_date_names = DatexFormatter::persianDateNames();
+  global $language;
+  if ($language->language == 'fa') {
+    $persian_date_names = DatexFormatter::persianDateNames();
 
-        $default = DatexFormatter::toJalali(
-            @$element['year']['#default_value'],
-            @$element['month']['#default_value'],
-            @$element['day']['#default_value']
-            );
+    $default = DatexFormatter::toJalali(
+            @$element['year']['#default_value'], @$element['month']['#default_value'], @$element['day']['#default_value']
+    );
 
-        if (in_array('year', $element['#granularity']) && array_key_exists('#default_value', $element['year'])) {
-            $element['year']['#default_value'] = $default['year'];
-        }
-        if (in_array('month', $element['#granularity'])&&array_key_exists('#default_value', $element['month'])) {
-            $element['month']['#default_value'] = $default['month'];
-        }
-        if (in_array('day', $element['#granularity']) && array_key_exists('#default_value', $element['day'])) {
-            $element['day']['#default_value'] = $default['day'];
-        }
-
-        //Generating Year Option (if field has year granularity):
-        if (in_array('year', $element['#granularity'])) {
-            //get year range
-            list($year_before, $year_after) = explode(':', $element['#date_year_range']);
-            $year_before = intval($year_before);
-            $year_after = intval($year_after);
-
-            $element['year']['#options'] = array();
-
-            //if year field is not required, add an empty value as drupal does.
-            if (!$element['#required']) {
-                $element['year']['#options'][''] = '';
-            }
-
-            //now add actual year options
-            $year_now = DatexFormatter::getYear();
-            for ($year = $year_now + $year_before; $year <= $year_now + $year_after; $year++) {
-                $element['year']['#options'][$year] = $year;
-            }
-        }
-
-        //Generating month Option (if field has month granularity).
-        if (in_array('month', $element['#granularity'])) {
-            $element['month']['#options'] = array();
-
-            //if field is not required, add an empty value as drupal does.
-            if (!$element['#required']) {
-                $element['month']['#options'][''] = '';
-            }
-
-            //now add month options
-            for ($i = 1; $i < 13; $i++) {
-                $element['month']['#options'][$i] = $persian_date_names['months'][$i];
-            }
-        }
-
-        //we don't need to change day options, in a date field input (select mode)
-        //day is alwys from 1 to 31, and also validation will happen later.
+    if (in_array('year', $element['#granularity']) && array_key_exists('#default_value', $element['year'])) {
+      $element['year']['#default_value'] = $default['year'];
     }
+    if (in_array('month', $element['#granularity']) && array_key_exists('#default_value', $element['month'])) {
+      $element['month']['#default_value'] = $default['month'];
+    }
+    if (in_array('day', $element['#granularity']) && array_key_exists('#default_value', $element['day'])) {
+      $element['day']['#default_value'] = $default['day'];
+    }
+
+    //Generating Year Option (if field has year granularity):
+    if (in_array('year', $element['#granularity'])) {
+      //get year range
+      list($year_before, $year_after) = explode(':', $element['#date_year_range']);
+      $year_before = intval($year_before);
+      $year_after = intval($year_after);
+
+      $element['year']['#options'] = array();
+
+      //if year field is not required, add an empty value as drupal does.
+      if (!$element['#required']) {
+        $element['year']['#options'][''] = '';
+      }
+
+      //now add actual year options
+      $year_now = DatexFormatter::getYear();
+      for ($year = $year_now + $year_before; $year <= $year_now + $year_after; $year++) {
+        $element['year']['#options'][$year] = $year;
+      }
+    }
+
+    //Generating month Option (if field has month granularity).
+    if (in_array('month', $element['#granularity'])) {
+      $element['month']['#options'] = array();
+
+      //if field is not required, add an empty value as drupal does.
+      if (!$element['#required']) {
+        $element['month']['#options'][''] = '';
+      }
+
+      //now add month options
+      for ($i = 1; $i < 13; $i++) {
+        $element['month']['#options'][$i] = $persian_date_names['months'][$i];
+      }
+    }
+
+    //we don't need to change day options, in a date field input (select mode)
+    //day is alwys from 1 to 31, and also validation will happen later.
+  }
 }
 
 /**
@@ -127,20 +125,18 @@ function datex_date_date_select_process_alter(&$element, &$form_state, $context)
  * on a edit form).
  */
 function datex_date_date_select_pre_validate_alter(&$element, &$form_state, &$input) {
-    global $language;
-    if ($language->language == 'fa') {
-        $field_name = $element['#instance']['field_name'];
-        $delta = $element['#delta'];
-        $dates = DatexFormatter::toGregorian(
-            $form_state['input'][$field_name]['und'][$delta]['value']['year'],
-            $form_state['input'][$field_name]['und'][$delta]['value']['month'],
-            $form_state['input'][$field_name]['und'][$delta]['value']['day']
-            );
+  global $language;
+  if ($language->language == 'fa') {
+    $field_name = $element['#instance']['field_name'];
+    $delta = $element['#delta'];
+    $dates = DatexFormatter::toGregorian(
+            $form_state['input'][$field_name]['und'][$delta]['value']['year'], $form_state['input'][$field_name]['und'][$delta]['value']['month'], $form_state['input'][$field_name]['und'][$delta]['value']['day']
+    );
 
-        list(
-            $form_state['input'][$field_name]['und'][$delta]['value']['year'],
-            $form_state['input'][$field_name]['und'][$delta]['value']['month'],
-            $form_state['input'][$field_name]['und'][$delta]['value']['day'])
-            = array($dates['year'], $dates['month'], $dates['day']);
-    }
+    list(
+        $form_state['input'][$field_name]['und'][$delta]['value']['year'],
+        $form_state['input'][$field_name]['und'][$delta]['value']['month'],
+        $form_state['input'][$field_name]['und'][$delta]['value']['day'])
+        = array($dates['year'], $dates['month'], $dates['day']);
+  }
 }

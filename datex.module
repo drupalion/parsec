@@ -8,23 +8,23 @@
  * Implements hook_help().
  */
 function datex_help($path, $arg) {
-    if ($path == 'admin/help#datex') {
-        $output = '<p>';
-        $output .= t('By enabling Datex, Gregorian dates generates by');
-        $output .= t('<em> date module </em>');
-        $output .= t('will be displayed in Jalali format.');
-        $output .= '</p><p>';
-        $output .= t('Note that Datex will not change display of dates when UI language is not Persian.');
-        $output .= '</p><p>';
-        $output .= t('For this module to work properly, you must have applied the patch from this modules folder.');
-        $output .= '</p>';
-        return $output;
-    }
-    return TRUE;
+  if ($path == 'admin/help#datex') {
+    $output = '<p>';
+    $output .= t('By enabling Datex, Gregorian dates generates by');
+    $output .= t('<em> date module </em>');
+    $output .= t('will be displayed in Jalali format.');
+    $output .= '</p><p>';
+    $output .= t('Note that Datex will not change display of dates when UI language is not Persian.');
+    $output .= '</p><p>';
+    $output .= t('For this module to work properly, you must have applied the patch from this modules folder.');
+    $output .= '</p>';
+    return $output;
+  }
+  return TRUE;
 }
 
-function datex_datex_format_alter(&$data,&$context) {
-    if ($context[4] == 'fa') {
-        $data = DatexFormatter::format(intval($context[0]), $context[2]);
-    }
+function datex_datex_format_alter(&$data, &$context) {
+  if ($context[4] == 'fa') {
+    $data = DatexFormatter::format(intval($context[0]), $context[2]);
+  }
 }

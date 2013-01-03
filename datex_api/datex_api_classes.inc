@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * API and helper functions used by other datex modules.
+ *
+ */
 define('DEFAULT_DATEXOBJECT_POLICY', TRUE);
 define('DATEX_USE_INTL', FALSE);
 
@@ -587,6 +592,7 @@ class DatexFormatter {
  * functionallity from object defiend in Drupal's date module DateObject.
  */
 class DatexObject {
+
   private $dateobj;
   public $error;
   public $error_message;
@@ -740,7 +746,7 @@ class DatexObject {
    * @see DateTime::diff
    *
    */
-  public function xdiff(DateTime $datetime2, $absolute = false) {
+  public function xdiff(DateTime $datetime2, $absolute = FALSE) {
     return $this->dateobj->diff($datetime2, $absolute);
   }
 

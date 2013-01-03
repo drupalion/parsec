@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Datex API installation hooks. Checks to see if PHP-Intl is available or not
+ */
+
+/**
  * Implements hook_requirements().
  * datex works much better with php-intl installed
  */
@@ -13,8 +18,7 @@ function datex_api_requirements($phase) {
   $requirements['datex_intl'] = array(
     'title' => $t('PHP Intl Avalibality'),
     'value' => $t(
-        '%datex_api works much better and more smoothly, if php-intl is available.',
-      array('datex_api' => 'Datex API')
+        '%datex_api works much better and more smoothly, if php-intl is available.', array('datex_api' => 'Datex API')
     ),
     'description' => $t('php-intl is new PHP Internationalazation class, Supporting all the calendars available, using php-intl, datex internal methods will not be needed any more since php-intl is faster and better.'),
     'severity' => REQUIREMENT_INFO,

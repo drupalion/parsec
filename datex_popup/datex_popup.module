@@ -53,7 +53,7 @@ function datex_popup_form_article_node_form_alter() {
   dargs();
 }
 
-function datex_popup_form_page_node_form_alter(&$form,&$form_state) {
+function datex_popup_form_page_node_form_alter(&$form, &$form_state) {
   $form['#validate'][] = 'datex_popup_form_validate';
   dargs();
 }
