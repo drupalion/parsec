@@ -17,14 +17,12 @@ function datex_date_help($path, $arg) {
     $output .= '</p>';
     return $output;
   }
-  return TRUE;
 }
 
 /**
- * Implemetns hook_date_formatter_dates_alter()
+ * Implemetns hook_date_formatter_dates_alter().
  *
- * Every date field is converted to Jalali format before it's rendering for
- * display.
+ * Converts gregorian date to Jalali date before display (as in node view).
  */
 function datex_date_date_formatter_dates_alter(&$dates, $context) {
   global $language;
@@ -54,9 +52,8 @@ function datex_date_date_formatter_dates_alter(&$dates, $context) {
 /**
  * Implements hook date_select_process_alter().
  *
- * Any date field in date form is converted to jalali before rendering on a edit
- * form and will later be converted back to Gregorian.
- * @see datex_date_date_select_pre_validate_alter
+ * Converts Gregorian date to Jalali date before displaying it in Form API.
+ * (such as node edit form).
  */
 function datex_date_date_select_process_alter(&$element, &$form_state, $context) {
   global $language;
@@ -119,24 +116,44 @@ function datex_date_date_select_process_alter(&$element, &$form_state, $context)
 }
 
 /**
- * Implements hook_date_date_select_pre_validate_alter
+ * Implements hook_date_date_select_pre_validate_alter().
  *
- * Convert back a Jalali to Gregorian (which was converted peroir to display
- * on a edit form).
+ * Converts Jalali date to Gregorian date before storing it in database (such
+ * as node edit form submit).
+ * Works for Date module's Select widget.
  */
 function datex_date_date_select_pre_validate_alter(&$element, &$form_state, &$input) {
   global $language;
   if ($language->language == 'fa') {
+    dargs();
     $field_name = $element['#instance']['field_name'];
     $delta = $element['#delta'];
     $dates = DatexFormatter::toGregorian(
-            $form_state['input'][$field_name]['und'][$delta]['value']['year'], $form_state['input'][$field_name]['und'][$delta]['value']['month'], $form_state['input'][$field_name]['und'][$delta]['value']['day']
+        @$form_state['input'][$element['#array_parents'][0]][$element['#array_parents'][1]][$element['#array_parents'][2]][$element['#array_parents'][3]]['year'],
+        @$form_state['input'][$element['#array_parents'][0]][$element['#array_parents'][1]][$element['#array_parents'][2]][$element['#array_parents'][3]]['month'],
+            @$form_state['input'][$element['#array_parents'][0]][$element['#array_parents'][1]][$element['#array_parents'][2]][$element['#array_parents'][3]]['day']
     );
 
-    list(
-        $form_state['input'][$field_name]['und'][$delta]['value']['year'],
-        $form_state['input'][$field_name]['und'][$delta]['value']['month'],
-        $form_state['input'][$field_name]['und'][$delta]['value']['day'])
-        = array($dates['year'], $dates['month'], $dates['day']);
+    $form_state['input'][$element['#array_parents'][0]][$element['#array_parents'][1]][$element['#array_parents'][2]][$element['#array_parents'][3]]['year'] = $dates['year'];
+    $form_state['input'][$element['#array_parents'][0]][$element['#array_parents'][1]][$element['#array_parents'][2]][$element['#array_parents'][3]]['month'] = $dates['month'];
+    $form_state['input'][$element['#array_parents'][0]][$element['#array_parents'][1]][$element['#array_parents'][2]][$element['#array_parents'][3]]['day'] = $dates['day'];
   }
 }
+
+function datex_date_date_field_instance_settings_form_alter(&$form, $context) {
+  dargs();
+}
+//function datex_date_date_select_pre_validate_alter(&$element, &$form_state, &$input) {
+//  dargs();
+//  global $language;
+//  if ($language->language == 'fa') {
+//    $dates = DatexFormatter::toGregorian($input['year'], $input['month'], $input['day']);
+//    list($year,$month,$day) = array($dates['year'], $dates['month'], $dates['day']);
+//
+//    $granularities = $element['#granularity'];
+//    $input['year'] = isset($granularities['year']) ? $year : 0;
+//    $input['month'] = isset($granularities['month']) ? $month : 0;
+//    $input['day'] = isset($granularities['day']) ? $day : 0;
+//    dargs();
+//  }
+//}

@@ -8,10 +8,10 @@
 /**
  * Implements hook_field_widget_info().
  */
-function datex_popup_field_widget_info() {
+function datex_widget_field_widget_info() {
   return array(
-    'datex_popup' => array(
-      'label' => t('Datex Popup'),
+    'datex_widget' => array(
+      'label' => t('Datex Widget'),
       'field types' => array('date', 'datestamp', 'datetime'),
     )
   );
@@ -20,8 +20,8 @@ function datex_popup_field_widget_info() {
 /**
  * Implements hook_field_widget_form().
  */
-function datex_popup_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  $module_path = drupal_get_path('module', 'datex_popup');
+function datex_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $module_path = drupal_get_path('module', 'datex_widget');
 
   $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : '';
 
@@ -39,26 +39,8 @@ function datex_popup_field_widget_form(&$form, &$form_state, $field, $instance, 
       'css' => array($module_path . '/js/js-persian-cal.css')
     ),
   );
-  drupal_add_js($module_path . '/datex_popup.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
+  drupal_add_js($module_path . '/datex_widget.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
 
   $element['value'] = $widget;
   return $element;
 }
-
-function xdatex_popup_form_alter() {
-  dargs();
-}
-
-function datex_popup_form_article_node_form_alter() {
-  dargs();
-}
-
-function datex_popup_form_page_node_form_alter(&$form, &$form_state) {
-  $form['#validate'][] = 'datex_popup_form_validate';
-  dargs();
-}
-
-function datex_popup_form_validate(&$form, &$form_state) {
-  dd($form);
-}
-
