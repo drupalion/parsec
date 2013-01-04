@@ -7,13 +7,12 @@
 
 /**
  * Implements hook_requirements().
+ *
  * datex works much better with php-intl installed
  */
 function datex_api_requirements($phase) {
   $requirements = array();
-  // Ensure translations don't break at install time
   $t = get_t();
-
 
   $requirements['datex_intl'] = array(
     'title' => $t('PHP Intl Avalibality'),

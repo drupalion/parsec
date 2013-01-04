@@ -5,11 +5,18 @@
  * API and helper functions used by other datex modules.
  *
  */
+
+/**
+ * API Config Constants.
+ */
 define('DEFAULT_DATEXOBJECT_POLICY', TRUE);
+//wheter to use Intl on date conversion or not. It's a default value and can be
+//set in module's settings form.
 define('DATEX_USE_INTL', FALSE);
 
 /**
  * Date tools for Jalali Dates.
+ *
  */
 class DatexFormatter {
 
@@ -590,6 +597,7 @@ class DatexFormatter {
 /**
  * This class is Jalali equivilant of php DateTime. It also has some
  * functionallity from object defiend in Drupal's date module DateObject.
+ *
  */
 class DatexObject {
 
@@ -927,6 +935,7 @@ class DatexObject {
 
 /**
  * Utitilities to work with a DatexObject
+ *
  */
 class DatexObjectUtils {
 
@@ -952,6 +961,12 @@ class DatexObjectUtils {
     return $date;
   }
 
+  /**
+   * Returns granularity parts of a goven date in an array.
+   *
+   * @param mixed $date @see DatexFormatter::getDateObject
+   * @return array
+   */
   public static function toArray($date = NULL) {
     $date = new DatexObject($date, FALSE);
     return array(
@@ -974,5 +989,4 @@ class DatexObjectUtils {
   public static function getJalaliObject($date = NULL) {
     return new DatexObject($date, FALSE);
   }
-
 }

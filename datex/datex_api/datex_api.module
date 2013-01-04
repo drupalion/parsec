@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @file Helper functions for converting date formats. Required by datex.
+ * @file Helper functions for converting date formats.
+ * Required by all datex module.
  */
 
 /**
@@ -9,6 +10,8 @@
  */
 function datex_api_menu() {
   $items = array();
+
+  //Set wheter to use php-intl or not.
   $items['admin/config/regional/date-time/datex_api'] = array(
     'title' => 'Datex API',
     'page callback' => 'drupal_get_form',
@@ -18,16 +21,19 @@ function datex_api_menu() {
     'file' => 'datex_api.inc',
     'type' => MENU_LOCAL_TASK,
   );
+
   return $items;
 }
 
 /**
- * Provides administration form for datex module.
+ * Provides administration form for datex module (menu callback).
+ *
  * @return drupal form
  */
 function datex_api_menu_callback() {
   $form = array();
 
+  //Set wheter to use php-intl or not.
   $form['datex_api_intl'] = array(
     '#type' => 'radios',
     '#title' => t('Date conversion method'),
@@ -40,8 +46,9 @@ function datex_api_menu_callback() {
 }
 
 /**
- * Experimental, dont use!
- * 
+ * BUGGY AND Experimental, DO NOT USE YET!
+ * Parses a Jalali string to dateobject.
+ *
  * @param type $date_orig
  * @param type $format
  * @return type
@@ -314,14 +321,15 @@ function datex_api_parse_jalali_from_format($date_orig, $format) {
 }
 
 /**
- * Alias of DatexFormater::format().
+ * Alias of @see DatexFormater::format().
+ *
  */
 function datex_format($date, $format, $use_intl) {
   return DatexFormatter::format($date, $format, $use_intl);
 }
 
 /**
- * similar to php date().
+ * Alias of @see DatexFormatter::date().
  *
  * @param type $format
  * @param type $timestamp

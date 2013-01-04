@@ -2,7 +2,6 @@ name = Datex API
 description = Provides API for converting Gregorian calendar dates to Jalali.
 package = Date/Time
 core = 7.x
-php = 5.2
 
 ;files
 files[] = datex_api.module

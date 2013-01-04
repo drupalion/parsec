@@ -23,7 +23,7 @@ function datex_help($path, $arg) {
 
 /**
  * Implements hook_datex_format_alter().
- * 
+ *
  */
 function datex_datex_format_alter(&$data, &$context) {
   if ($context[4] == 'fa') {
