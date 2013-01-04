@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * Implements hook_libraries_info().
+ *
+ */
+function xdatex_popup_libraries_info() {
+  $libraries = array();
+
+  //BASE
+  $libraries['jquerycalendars'] = array();
+  $libraries['jquerycalendars']['name'] = 'jQuery Calendars';
+  $libraries['jquerycalendars']['vendor url'] = 'http://keith-wood.name/';
+  $libraries['jquerycalendars']['download url'] = 'http://keith-wood.name/calendars.html';
+  //$libraries['jquerycalendars']['path'] = 'lib';
+  $libraries['jquerycalendars']['files'] = array(
+    //'1.1.4' => array(
+    //  'files' => array(
+        'js' => array('jquery.calendars.all.js')
+      //  )
+      //)
+    );
+
+  //DATE PICKER
+  $libraries['jquerydatepick'] = array();
+  $libraries['jquerydatepick']['name'] = 'jQuery DatePick';
+  $libraries['jquerydatepick']['vendor url'] = 'http://keith-wood.name/';
+  $libraries['jquerydatepick']['download url'] = 'http://keith-wood.name/datepick.html';
+  //$libraries['jquerydatepick']['path'] = 'lib';
+  $libraries['jquerydatepick']['dependencies'] = 'jquerycalendars';
+  $libraries['jquerydatepick']['versions'] = array(
+    '4.0.6' => array(
+      'files' => array(
+        'js' => array('jquery.datepick.js'),
+        'css' => array('jquery.datepick.css'),
+        )));
+
+
+  //LOCALAZATION
+  $libraries['jquerydatepick-fa'] = array();
+  $libraries['jquerydatepick-fa']['name'] = 'jQuery DatePicker l10n: Persian';
+  $libraries['jquerydatepick-fa']['vendor url'] = 'http://keith-wood.name/';
+  $libraries['jquerydatepick-fa']['download url'] = 'http://keith-wood.name/datepick';
+  //$libraries['jquerydatepick-fa']['path'] = 'lib';
+  $libraries['jquerydatepick-fa']['dependencies'] = 'jquerydatepick';
+  $libraries['jquerydatepick-fa']['versions'] = array(
+    '1' => array(
+      'files' => array(
+        'js' => array('jquery.datepick-fa.js'),
+        )));
+
+  return $libraries;
+}
+
