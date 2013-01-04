@@ -1,7 +1,9 @@
 <?php
 
 /**
- * @todo: what happens if one of granularities are not given?
+ * @file
+ * Convert output of date_format() to Jalali in a patched drupal installation.
+ *
  */
 
 /**
@@ -10,19 +12,19 @@
 function datex_help($path, $arg) {
   if ($path == 'admin/help#datex') {
     $output = '<p>';
-    $output .= t('By enabling Datex, Gregorian dates generates by');
-    $output .= t('<em> date module </em>');
-    $output .= t('will be displayed in Jalali format.');
+    $output .= t('By enabling Datex, Gregorian dates generates by drupal function %func will be converted to it\'s Jalali equivilant.', array('%type' => 'date_format()'));
     $output .= '</p><p>';
-    $output .= t('Note that Datex will not change display of dates when UI language is not Persian.');
-    $output .= '</p><p>';
-    $output .= t('For this module to work properly, you must have applied the patch from this modules folder.');
+    $output .= t('Note that this module requires drupal file %file to be patched', array('%file' => 'common.inc'));
+    $output .= t('The patch resides in Datex module folder');
     $output .= '</p>';
     return $output;
   }
-  return TRUE;
 }
 
+/**
+ * Implements hook_datex_format_alter().
+ * 
+ */
 function datex_datex_format_alter(&$data, &$context) {
   if ($context[4] == 'fa') {
     $data = DatexFormatter::format(intval($context[0]), $context[2]);
