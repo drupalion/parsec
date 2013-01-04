@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * Implements hook_libraries_info().
+ *
+ */
+function datex_popup_libraries_info() {
+  $libraries = array();
+
+  $libraries['jquery.calendars'] = array(
+    'name' => 'jQuery Calendars',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/calendars.html',
+    'version arguments' => array(
+      'file' => 'jquery.calendars.pack.js',
+      'pattern' => '/Calendars for jQuery v(\d.\d.\d)/',
+      'lines' => 2,
+    ),
+    'files' => array(
+      'js' => array('jquery.datepick-fa.js'),
+    ),
+  );
+
+  $libraries['jquery.calendars.fa'] = array(
+    'name' => ' jQuery Calendars Pack Persian',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/calendars.html',
+    'version callback' => 'datex_popup_intl_version_callback',
+    'files' => array(
+      'js' => array('jquery.datepick-fa.js'),
+    ),
+    'dependencies' => array(
+      'jquery.calendars'
+    ),
+  );
+
+  $libraries['jquery.datepicker'] = array(
+    'name' => 'jQuery Datepicker',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/datepick.html',
+    'version arguments' => array(
+      'file' => 'jquery.datepick.pack.js',
+      'pattern' => '/Date picker for jQuery v(\d.\d.\d)/',
+      'lines' => 2,
+    ),
+    'files' => array(
+      'js' => array('jquery.datepick.pack.js'),
+    ),
+    'dependencies' => array(
+      'jquery.calendars'
+    ),
+  );
+
+  $libraries['jquery.dateentry'] = array(
+    'name' => 'jQuery Date Entry',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/dateEntry.html',
+    'version arguments' => array(
+      'file' => 'jquery.dateentry.pack.js',
+      'pattern' => '/Date entry for jQuery v(\d.\d.\d.)/',
+      'lines' => 2,
+    ),
+    'files' => array(
+      'js' => array('jquery.dateentry.pack.js'),
+      'css' => array('jquery.dateentry.css'),
+    ),
+  );
+
+  $libraries['jquery.timeentry'] = array(
+    'name' => ' jQuery Time Entry',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/timeEntry.html',
+    'version arguments' => array(
+      'file' => 'jquery.timeentry.pack.js',
+      'pattern' => '/ Time entry for jQuery v(\d.\d.\d.)/',
+      'lines' => 2,
+    ),
+    'files' => array(
+      'js' => array('jquery.timeentry.pack.js'),
+      'css' => array('jquery.timeentry.css'),
+    ),
+  );
+
+  $libraries['jquery.datetimeentry'] = array(
+    'name' => ' jQuery DateTime Entry',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/datetimeEntry.html',
+    'version arguments' => array(
+      'file' => 'jquery.datetimeentry.min.js',
+      'pattern' => '/Date and time entry for jQuery v(\d.\d.\d.)/',
+      'lines' => 2,
+    ),
+    'files' => array(
+      'js' => array('jquery.datetimeentry.min.js'),
+      'css' => array('jquery.datetimeentry.css'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Required by datex_popup_libraries_info().
+ * @return int
+ */
+function datex_popup_intl_version_callback() {
+  //intl file has no version.
+  return 1;
+}
