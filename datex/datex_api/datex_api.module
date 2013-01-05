@@ -4,6 +4,26 @@
  * @file Helper functions for converting date formats.
  * Required by all datex module.
  */
+function datex_help($path, $arg) {
+  if ($path == 'admin/config/regional/date-time/datex_api' || $path == 'admin/help#datex_api' || $path == 'admin/help/datex_api') {
+    $output = '<p>';
+    $output .= t('PHP-Intl is a php library available at @dl_link .', array('@dl_link' => l('PHP PECL', 'http://pecl.php.net/intl')));
+    $output .= '</p>';
+
+    if (class_exists('IntlDateFormatter')) {
+      $output .= t('It is currently available for this Drupal installation environment and can be used.');
+    }
+    else {
+      $output .= t('It is currently NOT available for this Drupal installation environment and enabling this option will not affect the way %module works.', array('%module' => 'Datex API'));
+    }
+
+    $output .= '</p><p>';
+    $output .= t('You can read more about it at @link', array('@link' => 'http://www.drupalion.com/blog/123'));
+    $output .= '</p>';
+
+    return $output;
+  }
+}
 
 /**
  * Implements hook_menu().
