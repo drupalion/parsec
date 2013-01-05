@@ -8,10 +8,10 @@
 /**
  * Implements hook_field_widget_info().
  */
-function datex_widget_field_widget_info() {
+function persian_date_widget_field_widget_info() {
   return array(
-    'datex_widget' => array(
-      'label' => t('Datex Widget'),
+    'persian_date_widget' => array(
+      'label' => t('Persian Date Widget'),
       'field types' => array('date', 'datestamp', 'datetime'),
     )
   );
@@ -20,8 +20,8 @@ function datex_widget_field_widget_info() {
 /**
  * Implements hook_field_widget_form().
  */
-function datex_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  $module_path = drupal_get_path('module', 'datex_widget');
+function persian_date_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $module_path = drupal_get_path('module', 'persian_date_widget');
 
   $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : '';
 
@@ -39,7 +39,7 @@ function datex_widget_field_widget_form(&$form, &$form_state, $field, $instance,
       'css' => array($module_path . '/js/js-persian-cal.css')
     ),
   );
-  drupal_add_js($module_path . '/datex_widget.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
+  drupal_add_js($module_path . '/persian_date_widget.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
 
   $element['value'] = $widget;
   return $element;

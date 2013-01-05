@@ -4,16 +4,16 @@
  */
 
 //keep track of elements we added a datepicker to, saves their IDs.
-var datex_processed = new Array();
+var persianDateWidgetProcessed = new Array();
 
-Drupal.behaviors.datex_popup = {
+Drupal.behaviors.persianDateWidget = {
   attach: function(context, settings) {
       jQuery('.pdate').each(function(dummy) {
           var id = jQuery(this).attr('id');
-          if(datex_processed.indexOf(id) < 0) {
+          if(persianDateWidgetProcessed.indexOf(id) < 0) {
 
               //save ID of processed element to prevent re-processing it.
-              datex_processed.push(id);
+              persianDateWidgetProcessed.push(id);
 
               //create actual datepicker and put it in window to live there
               //while page is alive.
@@ -21,7 +21,7 @@ Drupal.behaviors.datex_popup = {
               //of processed items, which will increment by one each time and
               //make uniqe names.note that created objects name should be same
               //as first argument passed to AMIB constructor.
-              window['datex'+datex_processed.length] = new AMIB.persianCalendar( 'datex'+datex_processed.length, id );
+              window['persianDateWidget'+persianDateWidgetProcessed.length] = new AMIB.persianCalendar( 'persianDateWidget'+persianDateWidgetProcessed.length, id );
           }
       });
   }
