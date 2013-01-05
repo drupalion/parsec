@@ -14,6 +14,8 @@
  *
  */
 function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
+  dargs();
+
   global $language;
   if (($language->language != 'fa') || (!isset($form['#node_edit_form']))) {
     return NULL;
@@ -26,16 +28,23 @@ function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
   datex_jquery_add_libraries('jquery.datetimeentry', 'fa');
   drupal_add_js($path . '/datex_jquery.js');
 
-  $dates['year'] = substr($form['author']['date']['#default_value'], 0, 4);
-  $dates['month'] = substr($form['author']['date']['#default_value'], 5, 2);
-  $dates['day'] = substr($form['author']['date']['#default_value'], 8, 2);
-  $dates['hour'] = substr($form['author']['date']['#default_value'], 11, 2);
-  $dates['minute'] = substr($form['author']['date']['#default_value'], 14, 2);
-  $dates['second'] = substr($form['author']['date']['#default_value'], 17, 2);
+  //if it's empty, leave it empty.
+  if ($form['author']['date']['#default_value']) {
+    $dates['year'] = substr($form['author']['date']['#default_value'], 0, 4);
+    $dates['month'] = substr($form['author']['date']['#default_value'], 5, 2);
+    $dates['day'] = substr($form['author']['date']['#default_value'], 8, 2);
+    $dates['hour'] = substr($form['author']['date']['#default_value'], 11, 2);
+    $dates['minute'] = substr($form['author']['date']['#default_value'], 14, 2);
+    $dates['second'] = substr($form['author']['date']['#default_value'], 17, 2);
 
-  $dates = new DatexObject($dates, DATEX_GREGORIAN);
+    $dates = new DatexObject($dates, DATEX_GREGORIAN);
 
-  $form['author']['date']['#default_value'] = $dates->format('o-m-d H:i:s O');
+    $form['author']['date']['#default_value'] = $dates->format('o-m-d H:i:s O');
+  }
+
+  $dates->reset();
+  $form['author']['date']['#description'] = t('Format: %date The date format is YYYY-MM-DD and time is H:i:s. Leave blank to use the time of form submission.',
+      array('%date' => $dates->format('o-m-d H:i:s O')));
 
   $form['author']['date']['#element_validate'] = array('datex_node_edit_form_validate'); //,$form['#validate']);
 }
@@ -46,7 +55,8 @@ function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
  * @todo: does this function actually take a third element.
  */
 function datex_node_edit_form_validate(&$form, &$form_state, $f3 = 0) {
-  if ($language->language != 'fa') {
+  global $language;
+  if ($language->language != 'fa' && $form_state['values']['date']) {
     return NULL;
   }
 

@@ -649,6 +649,15 @@ class DatexObject {
   }
 
   /**
+   * Reset Date/Time to now.
+   *
+   */
+  public function reset() {
+    $this->dateobj = new DateTime();
+    return $this;
+  }
+
+  /**
    * Similar to DateTime::format
    *
    * @param string $format
@@ -694,7 +703,7 @@ class DatexObject {
     return $this;
   }
 
-  public function setDate($year, $month, $day) {
+  public function setDate($year = NULL, $month = NULL, $day = NULL) {
     $year = $year === NULL ? $this->format('Y') : $year;
     $month = $month === NULL ? $this->format('n') : $month;
     $day = $day === NULL ? $this->format('j') : $day;
