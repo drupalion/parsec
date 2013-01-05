@@ -40,7 +40,7 @@ function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
     $form['author']['date']['#default_value'] = $dates->format('o-m-d H:i:s O');
   }
 
-  $dates->reset();
+  $dates = new DatexObject();
   $form['author']['date']['#description'] = t('Format: %date The date format is YYYY-MM-DD and time is H:i:s. Leave blank to use the time of form submission.',
       array('%date' => $dates->format('o-m-d H:i:s O')));
 
