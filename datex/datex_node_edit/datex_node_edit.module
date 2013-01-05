@@ -14,8 +14,6 @@
  *
  */
 function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
-  dargs();
-
   global $language;
   if (($language->language != 'fa') || (!isset($form['#node_edit_form']))) {
     return NULL;

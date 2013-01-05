@@ -1,0 +1,7 @@
+name = Datex Widget
+description = Popup calendar widget for selecting date.
+core = 7.x
+package = Date/Time
+dependencies[] = datex_jquery
+files[] = datex_widget.module
+;configure =

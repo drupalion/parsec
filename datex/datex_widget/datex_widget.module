@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * Implements hook_field_widget_info().
+ *
+ */
+function datex_widget_field_widget_info() {
+  return array(
+    'datex_widget' => array(
+      'label' => t('Datex Popup'),
+      'field types' => array('date', 'datestamp', 'datetime'),
+    )
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ *
+ */
+function persian_date_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $module_path = drupal_get_path('module', 'persian_date_widget');
+
+  $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : '';
+
+  $widget = $element;
+  $widget['#delta'] = $delta;
+  $widget += array(
+    '#type' => 'textfield',
+    '#default_value' => $value,
+    '#attributes' => array('class' => array('pdate')),
+    '#attached' => array(
+      // Add javascript files
+      'js' => array($module_path . '/js/js-persian-cal.js',
+      ),
+      // Add css file
+      'css' => array($module_path . '/js/js-persian-cal.css')
+    ),
+  );
+  drupal_add_js($module_path . '/persian_date_widget.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
+
+  $element['value'] = $widget;
+  return $element;
+}
