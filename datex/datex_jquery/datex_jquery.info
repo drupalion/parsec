@@ -1,5 +1,5 @@
-name = Datex Popup
-description = Adds a popup similar to Date Popup but with i18n support
+name = Datex jQuery
+description = jQuery widgets for Time and Date entry.
 core = 7.x
 package = Date/Time
 dependencies[] = libraries

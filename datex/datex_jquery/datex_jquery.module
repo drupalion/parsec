@@ -4,7 +4,7 @@
  * Implements hook_libraries_info().
  *
  */
-function datex_popup_libraries_info() {
+function datex_jquery_libraries_info() {
   $libraries = array();
 
   $libraries['jquery.calendars'] = array(
@@ -17,17 +17,18 @@ function datex_popup_libraries_info() {
       'lines' => 2,
     ),
     'files' => array(
-      'js' => array('jquery.datepick-fa.js'),
+      'js' => array('jquery.calendars.pack.js'),
+      'css' => array('ui.calendars.picker.css'),
     ),
   );
 
-  $libraries['jquery.calendars.fa'] = array(
+  $libraries['jquery.fa'] = array(
     'name' => ' jQuery Calendars Pack Persian',
     'vendor url' => 'http://keith-wood.name/',
     'download url' => 'http://keith-wood.name/calendars.html',
-    'version callback' => 'datex_popup_intl_version_callback',
+    'version callback' => 'datex_jquery_intl_version_callback',
     'files' => array(
-      'js' => array('jquery.datepick-fa.js'),
+      'js' => array('jquery.fa.js'),
     ),
     'dependencies' => array(
       'jquery.calendars'
@@ -45,6 +46,7 @@ function datex_popup_libraries_info() {
     ),
     'files' => array(
       'js' => array('jquery.datepick.pack.js'),
+      'css' => array('ui.datepick.css'),
     ),
     'dependencies' => array(
       'jquery.calendars'
@@ -103,7 +105,23 @@ function datex_popup_libraries_info() {
  * Required by datex_popup_libraries_info().
  * @return int
  */
-function datex_popup_intl_version_callback() {
+function datex_jquery_intl_version_callback() {
   //intl file has no version.
   return 1;
+}
+
+/**
+ * Loads requested js libraries.
+ *
+ * @param type $libraries
+ */
+function datex_jquery_add_libraries($libraries = 'jquery.calendars') {
+  if(is_array($libraries)) {
+    foreach ($libraries as $library ) {
+      libraries_load($library);
+    }
+  }
+  else {
+    libraries_load($library);
+  }
 }

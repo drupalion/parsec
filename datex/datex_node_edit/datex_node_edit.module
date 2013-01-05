@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ * Adds ability of inserting Jalali dates on node edit form.
+ *
+ */
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Looks for node editing forms.
+ *
+ * @param type $form
+ * @param type $form_state
+ * @param type $form_id
+ */
+function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
+  global $language;
+  if (!isset($form['#node_edit_form']) || !($language->language != 'fa')) {
+    return NULL;
+  }
+
+  datex_jquery_add_libraries(array(
+    'jquery.calendars',
+    'jquery.datetimeentry',
+    'jquery.fa',
+  ));
+
+  $path = drupal_get_path('module', 'datex_node_edit');
+  $form['author']['#attached']['js'][2] = $path . '/datex_node_edit.js';
+
+  $form['#validate'] = array_merge(array('datex_node_edit_form_validate'),$form['#validate']);
+  dargs();
+}
+
+function datex_node_edit_form_validate(&$form, &$form_state) {
+  $datetime = explode('-', $form_state['values']['date']);
+
+  dargs();
+}
