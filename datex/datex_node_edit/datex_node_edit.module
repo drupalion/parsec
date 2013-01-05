@@ -9,33 +9,55 @@
 /**
  * Implements hook_form_alter().
  *
- * Looks for node editing forms.
+ * Looks for node editing forms and adds a Jalali calendar to author information
+ * editing field in vertical tabs.
  *
- * @param type $form
- * @param type $form_state
- * @param type $form_id
  */
 function datex_node_edit_form_alter(&$form, &$form_state, $form_id) {
   global $language;
-  if (!isset($form['#node_edit_form']) || !($language->language != 'fa')) {
+  if (($language->language != 'fa') || (!isset($form['#node_edit_form']))) {
     return NULL;
   }
 
-  datex_jquery_add_libraries(array(
-    'jquery.calendars',
-    'jquery.datetimeentry',
-    'jquery.fa',
-  ));
+  static $path = NULL;
+  if (!$path) {
+    $path = drupal_get_path('module', 'datex_node_edit');
+  }
+  datex_jquery_add_libraries('jquery.datetimeentry', 'fa');
+  drupal_add_js($path . '/datex_jquery.js');
 
-  $path = drupal_get_path('module', 'datex_node_edit');
-  $form['author']['#attached']['js'][2] = $path . '/datex_node_edit.js';
+  $dates['year'] = substr($form['author']['date']['#default_value'], 0, 4);
+  $dates['month'] = substr($form['author']['date']['#default_value'], 5, 2);
+  $dates['day'] = substr($form['author']['date']['#default_value'], 8, 2);
+  $dates['hour'] = substr($form['author']['date']['#default_value'], 11, 2);
+  $dates['minute'] = substr($form['author']['date']['#default_value'], 14, 2);
+  $dates['second'] = substr($form['author']['date']['#default_value'], 17, 2);
 
-  $form['#validate'] = array_merge(array('datex_node_edit_form_validate'),$form['#validate']);
-  dargs();
+  $dates = new DatexObject($dates, DATEX_GREGORIAN);
+
+  $form['author']['date']['#default_value'] = $dates->format('o-m-d H:i:s O');
+
+  $form['author']['date']['#element_validate'] = array('datex_node_edit_form_validate'); //,$form['#validate']);
 }
 
-function datex_node_edit_form_validate(&$form, &$form_state) {
-  $datetime = explode('-', $form_state['values']['date']);
+/**
+ * Convert back author date field to Gregorian.
+ *
+ * @todo: does this function actually take a third element.
+ */
+function datex_node_edit_form_validate(&$form, &$form_state, $f3 = 0) {
+  if ($language->language != 'fa') {
+    return NULL;
+  }
 
-  dargs();
+  $dates['year'] = substr($form_state['values']['date'], 0, 4);
+  $dates['month'] = substr($form_state['values']['date'], 5, 2);
+  $dates['day'] = substr($form_state['values']['date'], 8, 2);
+  $dates['hour'] = substr($form_state['values']['date'], 11, 2);
+  $dates['minute'] = substr($form_state['values']['date'], 14, 2);
+  $dates['second'] = substr($form_state['values']['date'], 17, 2);
+
+  $dates = new DatexObject($dates, FALSE);
+
+  $form_state['values']['date'] = $dates->xformat('o-m-d H:i:s O');
 }

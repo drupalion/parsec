@@ -18,20 +18,10 @@ function datex_jquery_libraries_info() {
     ),
     'files' => array(
       'js' => array('jquery.calendars.pack.js'),
-      'css' => array('ui.calendars.picker.css'),
-    ),
-  );
-
-  $libraries['jquery.fa'] = array(
-    'name' => ' jQuery Calendars Pack Persian',
-    'vendor url' => 'http://keith-wood.name/',
-    'download url' => 'http://keith-wood.name/calendars.html',
-    'version callback' => 'datex_jquery_intl_version_callback',
-    'files' => array(
-      'js' => array('jquery.fa.js'),
-    ),
-    'dependencies' => array(
-      'jquery.calendars'
+      'css' => array(
+        'ui.calendars.picker.css',
+        'ui-mint-choc.calendars.picker.css'
+        ),
     ),
   );
 
@@ -46,10 +36,26 @@ function datex_jquery_libraries_info() {
     ),
     'files' => array(
       'js' => array('jquery.datepick.pack.js'),
-      'css' => array('ui.datepick.css'),
+      'css' => array(
+        'ui.datepick.css',
+        'jquery.datepick.css',
+        ),
     ),
     'dependencies' => array(
       'jquery.calendars'
+    ),
+  );
+
+  $libraries['jquery.datepicker.fa'] = array(
+    'name' => ' jQuery Datepicker Persian',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/calendars.html',
+    'version callback' => 'datex_jquery_intl_version_callback',
+    'files' => array(
+      'js' => array('jquery.datepicker.fa.js'),
+    ),
+    'dependencies' => array(
+      'query.datepicker'
     ),
   );
 
@@ -68,6 +74,19 @@ function datex_jquery_libraries_info() {
     ),
   );
 
+  $libraries['jquery.datepicker.fa'] = array(
+    'name' => ' jQuery Datepicker Persian',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/calendars.html',
+    'version callback' => 'datex_jquery_intl_version_callback',
+    'files' => array(
+      'js' => array('jquery.datepicker.fa.js'),
+    ),
+    'dependencies' => array(
+      'jquery.datepicker'
+    ),
+  );
+
   $libraries['jquery.timeentry'] = array(
     'name' => ' jQuery Time Entry',
     'vendor url' => 'http://keith-wood.name/',
@@ -83,6 +102,19 @@ function datex_jquery_libraries_info() {
     ),
   );
 
+  $libraries['jquery.timeentry.fa'] = array(
+    'name' => ' jQuery DateTime Entry Persian',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/calendars.html',
+    'version callback' => 'datex_jquery_intl_version_callback',
+    'files' => array(
+      'js' => array('jquery.timeentry.fa.js'),
+    ),
+    'dependencies' => array(
+      'jquery.datetimeentry'
+    ),
+  );
+
   $libraries['jquery.datetimeentry'] = array(
     'name' => ' jQuery DateTime Entry',
     'vendor url' => 'http://keith-wood.name/',
@@ -95,6 +127,19 @@ function datex_jquery_libraries_info() {
     'files' => array(
       'js' => array('jquery.datetimeentry.min.js'),
       'css' => array('jquery.datetimeentry.css'),
+    ),
+  );
+
+  $libraries['jquery.datetimeentry.fa'] = array(
+    'name' => ' jQuery DateTime Entry Persian',
+    'vendor url' => 'http://keith-wood.name/',
+    'download url' => 'http://keith-wood.name/calendars.html',
+    'version callback' => 'datex_jquery_intl_version_callback',
+    'files' => array(
+      'js' => array('jquery.datetimeentry.fa.js'),
+    ),
+    'dependencies' => array(
+      'jquery.datetimeentry'
     ),
   );
 
@@ -115,13 +160,23 @@ function datex_jquery_intl_version_callback() {
  *
  * @param type $libraries
  */
-function datex_jquery_add_libraries($libraries = 'jquery.calendars') {
-  if(is_array($libraries)) {
-    foreach ($libraries as $library ) {
+function datex_jquery_add_libraries($libraries = NULL, $intl = NULL) {
+  //required for all.
+  libraries_load('jquery.calendars');
+
+  if (is_array($libraries)) {
+    unset($libraries['jquery.calendars']);
+    foreach ($libraries as $library) {
       libraries_load($library);
+      if ($intl) {
+        libraries_load($library . ".$intl");
+      }
     }
   }
-  else {
-    libraries_load($library);
+  elseif (is_string($libraries)) {
+    libraries_load($libraries);
+    if ($intl) {
+      libraries_load($libraries . ".$intl");
+    }
   }
 }

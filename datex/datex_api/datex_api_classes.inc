@@ -9,10 +9,26 @@
 /**
  * API Config Constants.
  */
-define('DEFAULT_DATEXOBJECT_POLICY', TRUE);
-//wheter to use Intl on date conversion or not. It's a default value and can be
-//set in module's settings form.
+
+/**
+ * wheter to use Intl on date conversion or not. It's a default value and can be
+ * set in module's settings form.
+ *
+ */
 define('DATEX_USE_INTL', FALSE);
+
+/**
+ * Define state of a given date.
+ */
+define('DATEX_GREGORIAN', TRUE);
+define('DATEX_JALALI', FALSE);
+
+/**
+ * Determines wheter default date given to datetime constructor is Jalali or
+ * Gregorian
+ *
+ */
+define('DEFAULT_DATEXOBJECT_POLICY', DATEX_GREGORIAN);
 
 /**
  * Date tools for Jalali Dates.
@@ -425,8 +441,9 @@ class DatexFormatter {
       return self::ObjectFromDate($date);
     }
     elseif (is_array($date)) {
-      $jalali_date = self::toGregorian(@$date['year'], @$date['month'], @$date['day']);
-      list($date['year'], $date['month'], $date['day']) = array($jalali_date['year'], $jalali_date['month'], $jalali_date['day']);
+      //we dont touch array indexed 'hour' 'minute' 'second'.
+      $greg_date = self::toGregorian(@$date['year'], @$date['month'], @$date['day']);
+      list($date['year'], $date['month'], $date['day']) = array($greg_date['year'], $greg_date['month'], $greg_date['day']);
       return self::ObjectFromDate($date);
     }
   }
@@ -464,12 +481,12 @@ class DatexFormatter {
     }
     elseif (is_array($date)) {
       list($year, $month, $day, $hour, $minute, $second) = array(
-        isset($date['year']) ? $date['year'] : date('Y'),
-        isset($date['month']) ? $date['year'] : date('n'),
-        isset($date['day']) ? $date['year'] : date('j'),
-        isset($date['hour']) ? $date['year'] : date('G'),
-        isset($date['minute']) ? $date['year'] : date('i'),
-        isset($date['second']) ? $date['year'] : date('s'),
+        isset($date['year']) ? intval($date['year']) : intval(date('Y')),
+        isset($date['month']) ? intval($date['month']) : intval(date('n')),
+        isset($date['day']) ? intval($date['day']) : intval(date('j')),
+        isset($date['hour']) ? intval($date['hour']) : intval(date('G')),
+        isset($date['minute']) ? intval($date['minute']) : intval(date('i')),
+        isset($date['second']) ? intval($date['second']) : intval(date('s')),
       );
       return new DateTime('@' . mktime($hour, $minute, $second, $month, $day, $year));
     }
